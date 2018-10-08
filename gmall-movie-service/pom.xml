@@ -10,7 +10,7 @@
     <description>用户业务逻辑模块</description>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>gmall-user-service</artifactId>
+    <artifactId>gmall-movie-service</artifactId>
 
     <dependencies>
         <!--service依赖Interface，对interface进行实现-->
