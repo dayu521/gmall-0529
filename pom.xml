@@ -7,6 +7,18 @@
     <groupId>com.atguigu.gmall</groupId>
     <artifactId>gmall-0529</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <!-- 聚合其他的工厂-->
+    <modules>
+        <module>gmall-bean</module>
+        <module>gmall-common</module>
+        <module>gmall-interface</module>
+        <module>gmall-webutil</module>
+        <module>gmall-serviceutil</module>
+        <module>gmall-movie-service</module>
+        <module>gmall-user-web</module>
+        <module>gmall-parent</module>
+    </modules>
     <packaging>pom</packaging>
     <description>这是一个聚合工程</description>
 

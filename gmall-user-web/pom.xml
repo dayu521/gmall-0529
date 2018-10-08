@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.atguigu.gmall</groupId>
+        <artifactId>gmall-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <description>这是用户的web模块</description>
+    <modelVersion>4.0.0</modelVersion>
+
+
+    <artifactId>gmall-user-web</artifactId>
+
+    <dependencies>
+        <!--web模块需要依赖自己的工具类（webutil）、-->
+        <dependency>
+            <groupId>com.atguigu.gmall</groupId>
+            <artifactId>gmall-webutil</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <!--web不需要依赖service，因为我们有dubbo-->
+
+        <!--web依赖interface模块，这里有接口，我们直接可以调用接口，dubbo帮我们进行远程调用-->
+        <dependency>
+            <groupId>com.atguigu.gmall</groupId>
+            <artifactId>gmall-interface</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+
+    </dependencies>
+
+
+</project>
