@@ -1,5 +1,6 @@
 package com.atguigu.gmall.manager;
 
+import com.alibaba.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -8,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 2、让thymeleaf不要进行语法的严格校验
  *
  */
+@EnableDubbo
 @SpringBootApplication
 public class GmallManagerWebApplication {
 
