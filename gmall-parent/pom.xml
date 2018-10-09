@@ -29,6 +29,7 @@
 		<dubbo.version>2.6.2</dubbo.version>
 		<zkclient.version>0.10</zkclient.version>
 		<mybatis.version>1.3.1</mybatis.version>
+		<mybatis.plus.version>3.0.3</mybatis.plus.version>
 		<nekohtml.version>1.9.20</nekohtml.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
 		<batik-ext.version>1.9.1</batik-ext.version>
@@ -60,6 +61,12 @@
 	<!--被管理起来的依赖，-->
 	<dependencyManagement>
 		<dependencies>
+
+			<dependency>
+				<groupId>com.baomidou</groupId>
+				<artifactId>mybatis-plus-boot-starter</artifactId>
+				<version>${mybatis.plus.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>com.alibaba</groupId>
 				<artifactId>fastjson</artifactId>

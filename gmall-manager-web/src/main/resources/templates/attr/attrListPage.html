@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>主界面</title>
+</head>
+<body >
+<div class="easyui-panel" title=""  data-options="border:true">
+
+    <!--表格-->
+    <table id="dg" class="easyui-datagrid" title="属性列表"
+           data-options="singleSelect:true,method:'get',toolbar:'#tb'">
+        <thead>
+         <tr>
+            <th width="20%">属性id </th>
+            <th width="80%">属性名</th>
+          </tr>
+        </thead>
+    </table>
+
+
+    <div id="tb" style="padding:5px;height:auto">
+        <div style="margin-bottom:5px">
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" >添加</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true">编辑</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        </div>
+        <div>
+            <!--三级联动效果-->
+            一级分类：
+            <select id="ctg1ForAttrList"  class="easyui-combobox"  style="width:100px"></select>
+            二级分类：
+            <select name="ctg2ForAttrList" id="ctg2ForAttrList"  class="easyui-combobox" style="width:100px" ></select>
+            三级分类：
+            <select name="ctg3ForAttrList" id="ctg3ForAttrList" class="easyui-combobox"  style="width:100px" ></select>
+               <a href="#" class="easyui-linkbutton" iconCls="icon-search" >刷新属性列表</a>
+        </div>
+    </div>
+
+
+</div>
+</body>
+<script language="javascript">
+    /*<![CDATA[*/
+
+    /*]]>*/
+</script>
+
+</html>
