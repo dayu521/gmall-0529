@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 2、让thymeleaf不要进行语法的严格校验
  *
  */
+
 @EnableDubbo
 @SpringBootApplication
 public class GmallManagerWebApplication {

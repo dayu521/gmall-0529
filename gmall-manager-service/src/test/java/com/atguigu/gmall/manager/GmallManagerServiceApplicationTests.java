@@ -23,7 +23,6 @@ import java.util.List;
  * 	    3、自定义一个mybatisplus的配置类，注入逻辑删除插件即可
  *
  */
-
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
