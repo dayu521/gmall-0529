@@ -8,7 +8,7 @@
     <artifactId>gmall-0529</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <!-- 聚合其他的工厂-->
+    <!-- 聚合其他的工程-->
     <modules>
         <module>gmall-bean</module>
         <module>gmall-common</module>
@@ -18,6 +18,8 @@
         <module>gmall-movie-service</module>
         <module>gmall-user-web</module>
         <module>gmall-parent</module>
+        <module>gmall-manager-service</module>
+        <module>gmall-manager-web</module>
     </modules>
     <packaging>pom</packaging>
     <description>这是一个聚合工程</description>

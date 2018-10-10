@@ -75,6 +75,20 @@ public class BaseAttrInfoServiceImpl implements BaseAttrInfoService {
                 }
 
             }
+        }else{
+            //基本属性没有id，那么就是新增
+            //1、先将新的基本属性插入到数据库，我们要使用到它的自增id来设置他里面的baseAttrValues的attrId值
+            //特别注意：由于新增的平台属性baseAttrInfo，页面并没有提交他所在的三级分类id，我们需要在ajax提交的时候加上三级分类信息
+            //   1）修改ajax请求给json对象加上三级分类属性的值   2）、给vo字段加上三级分类的值（catalog3Id）
+            baseAttrInfoMapper.insert(baseAttrInfo);
+            //2、获取到刚才插入的baseAttrInfo的id
+            Integer baseAttrInfoId = baseAttrInfo.getId();
+            //3、把每一个baseAttrValue的attrId设置好，然后插入即可
+            for (BaseAttrValue baseAttrValue : baseAttrInfo.getAttrValues()) {
+                baseAttrValue.setAttrId(baseAttrInfoId);
+                baseAttrValueMapper.insert(baseAttrValue);
+            }
+
         }
 
 

@@ -54,7 +54,8 @@ public class AttrManagerController {
         log.info("页面提交来的数据：{}",baseAttrInfoAndValueVO);
 
         //1、修改还是添加
-        if(baseAttrInfoAndValueVO.getId()!=null){
+//        if(baseAttrInfoAndValueVO.getId()!=null){  不用在controller中判断是修改还是添加，我们直接在service里面全部处理
+        //controller这里负责整理好数据传递过去即可
             //修改,检查新提交的属性名不能是空串.....
             //1、修改基本属性名
             //2、修改这个属性对应的所有的值
@@ -73,12 +74,12 @@ public class AttrManagerController {
             //将复制好的list设置在attrInfo中
             baseAttrInfo.setAttrValues(values);
             log.info("复制属性完成：{}",baseAttrInfo);
+
+            //以上数据整理完成，调用远程service进行处理
             baseAttrInfoService.saveOrUpdateBaseInfo(baseAttrInfo);
-
-
-        }else{
-
-        }
+//        }else{
+            //2、基本属性没有id是添加  我们希望无论是修改还是添加都是用baseAttrInfoService.saveOrUpdateBaseInfo(baseAttrInfo);一个方法
+//        }
         return "ok";
     }
 

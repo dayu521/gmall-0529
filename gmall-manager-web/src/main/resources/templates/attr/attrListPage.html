@@ -80,6 +80,8 @@
             if(getCatalog3Info()!=null){
                 //1、弹出对话框
                 $("#attrDlg").dialog('open');
+                //2、初始化对话框组件里面的内容。主要是清空可能由于之前的编辑还存在的值
+                clearAttrDlgContent();
             }else{
                 $.messager.alert('警告','请先选择三级分类');
             };
@@ -167,6 +169,50 @@
           return  $("#attrInfoTable").datagrid('getSelected');
        }
 
+       //清空弹框里面的内容
+       function clearAttrDlgContent() {
+           //1、所有组件赋值为null
+           $("#attrName").textbox('clear');
+           $("#attrId").val('')
+           //2、表格数据清空；
+           $("#attrInfoValueTable").datagrid({
+               data:[],
+               singleSelect:true,
+               onDblClickCell:onClickCell,
+               columns:[[
+                   {field:'id',title:'属性值id',width:100},
+                   {field:'valueName',title:'属性值名称',width:100,editor: {
+                       type: 'validatebox', options: { required: true}  //必填项
+                   }
+                   }
+               ]],
+               toolbar: [{
+                   text:'添加',
+                   iconCls: 'icon-add',
+                   handler: function(){
+                       //给表格中添加一行数据而且可以双击编辑的
+                       $("#attrInfoValueTable").datagrid('appendRow',{
+                           id:'',
+                           valueName:'',
+                           attrId: ''//新增的情况下还没有平台属性id
+                       });
+                   }
+               },'-',{
+                   text:'删除',
+                   iconCls: 'icon-remove',
+                   handler: function(){
+                       //删除指定的行
+                       //返回当前行的数据
+                       var data = $("#attrInfoValueTable").datagrid('getSelected');
+                       var index = $("#attrInfoValueTable").datagrid('getRowIndex',data);
+                       $("#attrInfoValueTable").datagrid('deleteRow',index);
+                   }
+               }]
+
+           })
+
+
+       }
 
 
 

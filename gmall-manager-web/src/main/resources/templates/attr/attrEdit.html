@@ -40,6 +40,7 @@
         attrInfoAndValue.id = $("#attrId").val();
         //getValue
         attrInfoAndValue.attrName = $("#attrName").textbox('getValue');
+        attrInfoAndValue.catalog3Id = getCatalog3Info().id;//提交上三级分类的id，这样新增基本属性的时候就有三级分类信息了
 
 
         //2）、获取基本属性的所有的值

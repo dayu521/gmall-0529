@@ -20,6 +20,7 @@ public class BaseAttrInfoAndValueVO {
 
     private Integer id;
     private String attrName;
+    private Integer catalog3Id;//收集页面提交的三级分类的id
     private List<BaseAttrValueVo> attrValues;
 
 
