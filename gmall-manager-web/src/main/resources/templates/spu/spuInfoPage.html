@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>spu信息编辑页面</title>
+</head>
+<body>
+
+<!-----------------弹出框----------------------------->
+<div id="spu_dlg" class="easyui-dialog" title="编辑spu" style="width:700px;height:520px;"
+     closed="true"  data-options="iconCls:'icon-save',resizable:true,modal:false" buttons="#spuBtns" >
+    <form id="spuForm">
+        <br/>
+        <label>spu名称:</label>
+        <input  id="spuName" name="spuName" class="easyui-textbox" data-options="" style="width:300px;"/>
+        <br/><br/>
+        <label>spu描述:</label>
+        <input  id="description" name="description" class="easyui-textbox" data-options="multiline:true" style="width:500px;height:100px"/>
+
+        <input id="spuId" name="spuId" type="hidden"/>
+        <br/><br/>
+
+        <!----------------商品图片列表 ----------------------->
+
+        <table id="spuImgDg" class="easyui-datagrid" title="商品图片列表"
+               data-options="singleSelect:true,method:'get',toolbar:'#spuImgTootbar'" >
+            <thead>
+                <tr>
+                    <th data-options="field:'id',width:100">图片id</th>
+                    <th data-options="field:'imgName',width:200">图片名称</th>
+                    <th data-options="field:'imgUrl',width:100,align:'right',hidden:true">图片url</th>
+                    <th data-options="field:'process',width:200">上传进度</th>
+                    <th data-options="field:'status',width:100">图片状态</th>
+                </tr>
+            </thead>
+        </table>
+
+        <!----------------图片列表工具栏----------------------->
+        <div id="spuImgTootbar" style="padding:5px;height:auto"  >
+            <div style="margin-bottom:5px">
+                <a href="#" id="spuImgAdd" class="easyui-linkbutton" iconCls="icon-add" plain="true">添加图片</a>
+                <a href="#" id="spuImgUploadBtn" class="easyui-linkbutton" iconCls="icon-save" plain="true" >图片上传</a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+            </div>
+        </div>
+
+        <br/><br/>
+        <!----------------销售属性列表---------------------------->
+        <table id="spuSaleAttrDg" class="easyui-datagrid" title="销售属性列表"
+               data-options="singleSelect:true,method:'get',toolbar:'#spuSaleAttrTootbar'" >
+            <thead>
+                <tr>
+                    <th data-options="field:'id',width:100">销售属性id</th>
+                    <th data-options="field:'name',width:300">销售属性名称</th>
+                </tr>
+            </thead>
+        </table>
+
+        <!----------------销售属性列表工具栏----------------------->
+        <div id="spuSaleAttrTootbar" style="padding:5px;height:auto"  >
+            <div style="margin-bottom:5px">
+                <a href="#" id="spuSaleAttrAddBtn"  onclick="spuSaleAttrAddBtnClick()"
+                   class="easyui-linkbutton" iconCls="icon-add" plain="true">添加销售属性</a>
+                <a href="#" id="spuSaleAttrEditBtn" onclick="spuSaleAttrEditBtnClick()"
+                   class="easyui-linkbutton" iconCls="icon-edit" plain="true">编辑销售属性</a>
+                <a href="#" id="spuSaleAttrDelBtn"  onclick="spuSaleAttrDelBtn()"
+                   class="easyui-linkbutton" iconCls="icon-remove" plain="true" >删除</a>
+            </div>
+        </div>
+
+
+    </form>
+</div>
+<!----------------弹出框的按钮组----------------------->
+<div id="spuBtns">
+    <a href="#" class="easyui-linkbutton">保 存</a>
+    <a href="#" class="easyui-linkbutton" onclick="$('#spu_dlg').dialog('close')">关 闭</a>
+</div>
+<!--引入spu销售属性对话框-->
+<div th:include="spu/spuSaleAttrPage"></div>
+
+<script language="javascript">
+    /*<![CDATA[*/
+    //添加销售属性按钮点击
+    function spuSaleAttrAddBtnClick() {
+        $("#spuSaleAttr_dlg").dialog("open");
+
+    }
+
+    //修改销售属性按钮点击
+    function spuSaleAttrEditBtnClick() {
+
+    }
+
+    //删除销售属性按钮点击
+    function spuSaleAttrDelBtn() {
+
+    }
+    /*]]>*/
+</script>
+</body>
+</html>
