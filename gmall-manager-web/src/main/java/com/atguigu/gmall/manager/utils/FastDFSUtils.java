@@ -45,7 +45,6 @@ public class FastDFSUtils {
 
     public String getUploadFileUrl(String[] strs){
         //文件服务器网址+str[0]+str[1]
-
         return "http://"+fileServer+"/"+strs[0]+"/"+strs[1];
     }
 
