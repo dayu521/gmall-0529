@@ -38,7 +38,12 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
-
+		<!--这个包网上没有需要自己下载项目构建安装到仓库中-->
+		<dependency>
+			<groupId>org.csource</groupId>
+			<artifactId>fastdfs-client-java</artifactId>
+			<version>1.27-SNAPSHOT</version>
+		</dependency>
 
 
 	</dependencies>

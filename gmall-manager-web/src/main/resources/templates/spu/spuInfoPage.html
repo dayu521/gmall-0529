@@ -23,7 +23,9 @@
         <!----------------商品图片列表 ----------------------->
 
         <table id="spuImgDg" class="easyui-datagrid" title="商品图片列表"
-               data-options="singleSelect:true,method:'get',toolbar:'#spuImgTootbar',idField:'id'" >
+               data-options="singleSelect:true,method:'get',
+               toolbar:'#spuImgTootbar',idField:'id',
+               view:detailview,detailFormatter:imgRowDetailFormatter" >
             <thead>
                 <tr>
                     <th data-options="field:'id',width:100">图片id</th>
@@ -149,14 +151,15 @@
 
     //文件上传成功
     uploader.on( 'uploadSuccess', function( file ,response) {
-        console.log( response._raw)
+
         var index = $("#spuImgDg").datagrid('getRowIndex',file.id)
         //修改这个文件所在行的值
         $("#spuImgDg").datagrid('updateRow',{
             index:index,
             row:{
                 process:100,
-                status:'上传成功'
+                status:'上传成功',
+                imgUrl:response._raw  //上传成功将imgUrl传入row数据
             }
         });
     });
@@ -199,6 +202,15 @@
             return '<label style="color: red">'+value+'</label>'
         }
         return '<label style="color: blue">'+value+'</label>'
+    }
+    
+    //imgRowDetailFormatter 展开显示功能
+    function imgRowDetailFormatter(rowIndex, rowData) {
+        //展示row数据
+        if (rowData.imgUrl == ""){
+            return '请先上传此图片才能预览'
+        }
+        return '<img src="'+rowData.imgUrl+'" style="height:50px;">'
     }
 
     /*]]>*/
