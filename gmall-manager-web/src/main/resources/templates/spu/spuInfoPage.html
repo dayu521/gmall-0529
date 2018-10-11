@@ -23,14 +23,14 @@
         <!----------------商品图片列表 ----------------------->
 
         <table id="spuImgDg" class="easyui-datagrid" title="商品图片列表"
-               data-options="singleSelect:true,method:'get',toolbar:'#spuImgTootbar'" >
+               data-options="singleSelect:true,method:'get',toolbar:'#spuImgTootbar',idField:'id'" >
             <thead>
                 <tr>
                     <th data-options="field:'id',width:100">图片id</th>
                     <th data-options="field:'imgName',width:200">图片名称</th>
                     <th data-options="field:'imgUrl',width:100,align:'right',hidden:true">图片url</th>
-                    <th data-options="field:'process',width:200">上传进度</th>
-                    <th data-options="field:'status',width:100">图片状态</th>
+                    <th data-options="field:'process',width:200,formatter:formatterImgProcess">上传进度</th>
+                    <th data-options="field:'status',width:100,formatter:formatterImgStatus">图片状态</th>
                 </tr>
             </thead>
         </table>
@@ -38,7 +38,7 @@
         <!----------------图片列表工具栏----------------------->
         <div id="spuImgTootbar" style="padding:5px;height:auto"  >
             <div style="margin-bottom:5px">
-                <a href="#" id="spuImgAdd" class="easyui-linkbutton" iconCls="icon-add" plain="true">添加图片</a>
+                <a href="#" id="spuImgAddBtn" class="easyui-linkbutton" iconCls="icon-add" plain="true">添加图片</a>
                 <a href="#" id="spuImgUploadBtn" class="easyui-linkbutton" iconCls="icon-save" plain="true" >图片上传</a>
                 <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
             </div>
@@ -96,6 +96,111 @@
     function spuSaleAttrDelBtn() {
 
     }
+
+
+    // 初始化Web Uploader
+    var uploader  = WebUploader.create({
+        auto:false,
+        // swf文件路径
+        swf:'/webuploader/Uploader.swf',
+        // 文件接收服务端。
+        server:'file/upload',
+        // 选择文件的按钮。可选。
+        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+        pick:'#spuImgAddBtn',
+        // 只允许选择图片文件。
+        accept:{
+            title: 'Images',
+            extensions: 'gif,jpg,jpeg,bmp,png',
+            mimeTypes: 'image/*'
+        }
+    });
+    //修改一下文件选择按钮隐藏的div的宽高；
+    $("#spuImgAddBtn div:eq(0)").css({width:'100%',height:'100%'})
+
+    //监听各个事件，并更新图片表格中的数据
+    // 当有文件被添加进队列的时候
+    uploader.on( 'fileQueued', function( file ) {
+        //console.log(file.id+"==>"+file.name+"===>"+file.size)
+        //将图片信息放在table中
+        $("#spuImgDg").datagrid('appendRow',{
+            id:file.id,
+            imgName:file.name,
+            imgUrl:'',
+            process:0,
+            status:'等待上传'
+        })
+    });
+
+    // 文件上传过程中创建进度条实时显示。
+    uploader.on( 'uploadProgress', function( file, percentage ) {
+        //找到这个文件所在行的索引
+        var index = $("#spuImgDg").datagrid('getRowIndex',file.id)
+        //修改这个文件所在行的值
+        $("#spuImgDg").datagrid('updateRow',{
+            index:index,
+            row:{
+                process:Math.round(percentage*10000)/100,
+                status:'上传中'
+            }
+        });
+    });
+
+
+    //文件上传成功
+    uploader.on( 'uploadSuccess', function( file ,response) {
+        console.log( response._raw)
+        var index = $("#spuImgDg").datagrid('getRowIndex',file.id)
+        //修改这个文件所在行的值
+        $("#spuImgDg").datagrid('updateRow',{
+            index:index,
+            row:{
+                process:100,
+                status:'上传成功'
+            }
+        });
+    });
+
+    //文件上传失败
+    uploader.on( 'uploadError', function( file ) {
+        var index = $("#spuImgDg").datagrid('getRowIndex',file.id)
+        //修改这个文件所在行的值
+        $("#spuImgDg").datagrid('updateRow',{
+            index:index,
+            row:{
+                process:0,
+                status:'上传失败'
+            }
+        });
+    });
+
+    //点击进行图片上传
+    $("#spuImgUploadBtn").click(function () {
+        //上传所有
+        uploader.upload();
+    });
+
+
+    //进度条列格式化方法
+    function formatterImgProcess(value,row,index) {
+        var processBar = $("<div></div>").progressbar({
+            value:value
+        })
+        var div = $("<div></div>").append(processBar);
+        return div.html();
+    }
+    //状态列格式化方法
+    function formatterImgStatus(value,row,index) {
+        console.log("收到的value："+value);
+        if(value == '上传成功'){
+            return '<label style="color: green">'+value+'</label>'
+        }
+        if(value == '上传失败'){
+            return '<label style="color: red">'+value+'</label>'
+        }
+        return '<label style="color: blue">'+value+'</label>'
+    }
+
     /*]]>*/
 </script>
 </body>

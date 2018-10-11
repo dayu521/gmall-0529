@@ -11,13 +11,23 @@
      closed="true"  data-options="iconCls:'icon-save',resizable:true,modal:false" buttons="#spuSaleAttrBtns" >
   <br/><br/>
     <!------------------从基本销售属性中选择------------->
-    销售属性：  <select name="saleAttr" id="saleAttrSelect"  class="easyui-combobox" data-options="valueField:'id',textField:'name',url:'baseSaleAttrList'" style="width:100px">  </select>
+    销售属性：  <select name="saleAttr" id="saleAttrSelect"  class="easyui-combobox" data-options="valueField:'id',textField:'name'" style="width:100px">  </select>
     <br/><br/>
+
 
 
     <!----------------销售属性值列表---------------------------->
     <table id="spuSaleAttrValueDg" class="easyui-datagrid" title="销售属性值列表"
-           data-options="singleSelect:true,method:'get',toolbar:'#spuSaleAttrValueTootbar'" ></table>
+           data-options="singleSelect:true,method:'get',toolbar:'#spuSaleAttrValueTootbar'" >
+        <thead>
+            <tr>
+                <th data-options="field:'id',width:100">属性id</th>
+                <th data-options="field:'saleAttrValueName',width:100">属性值</th>
+            </tr>
+        </thead>
+
+
+    </table>
 
 
 

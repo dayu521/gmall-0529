@@ -9,6 +9,11 @@
     <script type="text/javascript" src="/easyui/clickedit.js"></script>
     <link rel="stylesheet" type="text/css" href="/easyui/themes/icon.css">
     <link rel="stylesheet" type="text/css"  href="/easyui/themes/default/easyui.css">
+
+    <link rel="stylesheet" type="text/css" href="/webuploader/webuploader.css">
+    <script type="text/javascript" src="/webuploader/webuploader.js"></script>
+    <script type="text/javascript" src="/easyui/datagrid-detailview.js"></script>
+
 </head>
 <body  class="easyui-layout">
     <div data-options="region:'north',title:'顶部'" style="height:100px;"></div>
@@ -44,7 +49,6 @@
             if($("#tt").tabs('exists',title)){
                 //已经存在 选中之前的按钮
                 $("#tt").tabs('select',title);
-
             }else{
                 $("#tt").tabs('add',{
                     title:title,
@@ -54,7 +58,6 @@
             };
             //easyui掉某个组件的方法的语法格式
             //$("选中组件").组件('方法名',{传参数})
-
         }
 
     </script>
