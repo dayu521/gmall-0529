@@ -23,7 +23,8 @@
         <!----------------商品图片列表 ----------------------->
 
         <table id="spuImgDg" class="easyui-datagrid" title="商品图片列表"
-               data-options="singleSelect:true,method:'get',toolbar:'#spuImgTootbar',idField:'id'" >
+               data-options="singleSelect:true,method:'get',toolbar:'#spuImgTootbar',
+               idField:'id',view:detailview,detailFormatter:spuImgTableDetailFormatter" >
             <thead>
                 <tr>
                     <!--idField:'id';快速使用id这一列的值检索到当前行的索引-->
@@ -157,14 +158,17 @@
     });
 
     // 文件上传成功，在图片的table中显示图片上传状态
-    uploader.on( 'uploadSuccess', function( file ) {
+    uploader.on( 'uploadSuccess', function( file,response) {
+
         console.log("uploadSuccess");
         var index = $("#spuImgDg").datagrid('getRowIndex',file.id);
         //2、修改这一行的process数据
         $("#spuImgDg").datagrid('updateRow',{
             index:index,
             row:{
-                status:'上传成功'
+                status:'上传成功',
+                imgUrl:response._raw
+
             }
         });
     });
@@ -208,6 +212,12 @@
         return "<label style='color: blue'>"+value+"</label>";
     }
 
+    //表格详细视图组件格式化器
+    function spuImgTableDetailFormatter(rowIndex, rowData) {
+        console.log(rowIndex)
+        console.log(rowData)
+        return "<img src='"+rowData.imgUrl+"' style='width: 150px;height: auto'/>";
+    }
     /*]]>*/
 </script>
 </body>
