@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<body>
+<div class="easyui-panel" title=""  data-options="border:true">
+    <!-----------------列表 ----------------------------->
+    <!-- 页面上每一个属性名都和javaBean的属性名一模一样 -->
+    <table id="spulist_dg" class="easyui-datagrid" title="spu列表"
+           data-options="singleSelect:true,method:'get' ,toolbar:'#spulist_tb'">
+        <thead>
+        <tr>
+            <th data-options="field:'id'" width="10%">商品id </th>
+            <th data-options="field:'spuName'" width="30%">商品名称</th>
+            <th data-options="field:'description'" width="60%">商品描述 </th>
+        </tr>
+        </thead>
+    </table>
+    <!-----------------列表的工具栏----------------------------->
+    <div id="spulist_tb" style="padding:5px;height:auto">
+        <div style="margin-bottom:5px">
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="popAddSpuInfoModal()">添加</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true">编辑</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true">增加sku</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true"> sku列表</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true"> SPU商品上架</a>
+        </div>
+        <div>
+            <!--三级联动效果-->
+            一级分类：
+            <select id="ctg1ForSpuList"  class="easyui-combobox"  style="width:100px"
+                    data-options="valueField:'id',textField:'name',url:'basecatalog/1/list.json',
+                 onSelect:function(rec){
+                     //刷新二级分类的内容
+                    $('#ctg2ForSpuList').combobox('reload','basecatalog/2/list.json?id='+rec.id);
+                    //清空下级内容
+                    $('#ctg2ForSpuList').combobox('clear');
+                    $('#ctg3ForSpuList').combobox('clear');
+                 }"></select>
+            二级分类：
+            <select id="ctg2ForSpuList" name="ctg2ForSpuList"   class="easyui-combobox" style="width:100px"
+                    data-options="valueField:'id',textField:'name',onSelect:function(rec){
+                //刷新三级分类的内容
+                 //清空下级内容
+                $('#ctg3ForSpuList').combobox('clear');
+                $('#ctg3ForSpuList').combobox('reload','basecatalog/3/list.json?id='+rec.id);
+            }"></select>
+            三级分类：
+            <select name="ctg3ForSpuList" id="ctg3ForSpuList" class="easyui-combobox"  style="width:100px"
+                    data-options="valueField:'id',textField:'name',onSelect:function(rec){
+                    //查询三级分类下对应的商品信息
+                    refreshSpuListTable(rec.id);
+                }"></select>
+            <a href="#" onclick="refreshSpuListTable()" class="easyui-linkbutton" iconCls="icon-search">刷新属性列表</a>
+        </div>
+    </div>
+</div>
+
+<!--引入spu信息输入框页面-->
+<div th:include="spu/spuInfoPage"></div>
+</body>
+<script language="javascript">
+    /*<![CDATA[*/
+
+        //刷新spu商品信息列表
+        function refreshSpuListTable(id) {
+            var c3id = null;
+            if(id != null){
+                c3id = id;
+            }else{
+                c3id = getSpuCatalog3Info().id
+            }
+
+            //获取数据，刷新到表格中
+            $("#spulist_dg").datagrid({
+                url:'spu/info.json?catalog3Id='+c3id
+            })
+        }
+
+        //打开spu信息编辑弹出框
+        function popAddSpuInfoModal() {
+            if(getSpuCatalog3Info()!=null){
+                $("#spu_dlg").dialog('open');
+            }else{
+                $.messager.alert('警告','请先选择三级分类');
+            };
+        }
+
+        //获取三级分类的信息
+        function getSpuCatalog3Info(){
+            var id = $("#ctg3ForSpuList").combobox("getValue");
+            var text = $("#ctg3ForSpuList").combobox("getText");
+            var info = {id:id,name:text};
+            if(id == ""){
+                return null;
+            }
+            return info;
+        }
+
+    /*]]>*/
+</script>
+</html>
