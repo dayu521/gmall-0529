@@ -23,8 +23,8 @@
             <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="popAddSpuInfoModal()">添加</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true">编辑</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true">增加sku</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true"> sku列表</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="popAddSkuInfoModal()">增加sku</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="popSkuListModal()"> sku列表</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true"> SPU商品上架</a>
         </div>
         <div>
@@ -60,7 +60,94 @@
 
 <!--引入spu信息输入框页面-->
 <div th:include="spu/spuInfoPage"></div>
+<div th:include="sku/skuInfoPage"></div>
+<div th:include="sku/skuListPage"></div>
 </body>
+<script language="javascript">
+    /*<![CDATA[*/
+        function popAddSkuInfoModal() {
+            $("#sku_dlg").dialog('open');
+            //1、查询平台属性
+            //attrInfoGroup
+            getAttrInfoGroup();
+            //2、查询销售属性
+            getSpuSaleAttrGroup();
+            //spuSaleAttrGroup
+            //3、查询图片列表
+        }
+        
+        function popSkuListModal() {
+            $("#skulist_dlg").dialog('open');
+        }
+        
+        //查询平台属性
+        function getAttrInfoGroup() {
+            var c3info = getSpuCatalog3Info();
+            $.get("sku/base_attr?id="+c3info.id,function (data) {
+                renderAttrInfoGroup(data);
+            })
+        }
+        
+        //查询销售属性
+        function getSpuSaleAttrGroup() {
+            //找到选中的spuid
+            var row = $("#spulist_dg").datagrid('getSelected')
+            $.get("sku/spu_sale_attr?id="+row.id,function (data) {
+                renderSpuSaleAttrGroup(data)
+            })
+        }
+        //渲染页面效果
+        function renderAttrInfoGroup(data) {
+            $.each(data,function () {
+                var ele = $("<label class='attrInfoGroup'></label>");
+                var label = "<label id='"+this.id+"' " +
+                    "catalog3Id='"+this.catalog3Id+"' " +
+                    "attrName='"+this.attrName+"'>"+this.attrName
+                    +"</label>";
+                var select = $("<select></select>");
+                //遍历里面的option项
+                $.each(this.attrValues,function () {
+                    //id: 81, valueName: "64G", attrId: 24
+                    select.append("<option id='"+this.id+"' " +
+                        "valueName='"+this.valueName+"'" +
+                        "attrId='"+this.attrId+"'>"+this.valueName+"</option>")
+                });
+                ele.append(label).append(select);
+                $("#attrInfoGroup").append(ele).append("  ");
+            })
+        }
+        //渲染spu销售属性
+        function renderSpuSaleAttrGroup(data) {
+            /**
+             *    private Integer spuId;
+             private Integer saleAttrId;
+             private String saleAttrName;
+             * **/
+            $.each(data,function () {
+                var ele = $("<label class='spuSaleAttrGroup'></label>");
+                var label = "<label id='"+this.id+"' " +
+                    "spuId='"+this.spuId+"' " +
+                    "saleAttrId='"+this.saleAttrId+"'" +
+                    "saleAttrName='"+this.saleAttrName+"'>"+this.saleAttrName
+                    +"</label>";
+                var select = $("<select></select>");
+                //遍历里面的option项
+                /***   private Integer spuId;
+                 private Integer saleAttrId;
+                 private String  saleAttrValueName;**/
+                $.each(this.saleAttrValues,function () {
+                    //id: 81, valueName: "64G", attrId: 24
+                    select.append("<option id='"+this.id+"' " +
+                        "spuId='"+this.spuId+"'" +
+                        "saleAttrId='"+this.saleAttrId+"'" +
+                        "saleAttrValueName='"+this.saleAttrValueName+"'>"+this.saleAttrValueName+"</option>")
+                });
+                ele.append(label).append(select);
+                $("#spuSaleAttrGroup").append(ele).append("  ");
+            })
+        }
+    /*]]>*/
+</script>
 <script language="javascript">
     /*<![CDATA[*/
 
