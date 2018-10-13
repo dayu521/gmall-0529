@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<!-----------------弹出框----------------------------->
+<div id="sku_dlg" class="easyui-dialog" title="编辑sku" style="width:700px;height:520px;"
+     closed="true" data-options="iconCls:'icon-save',resizable:true,modal:false" buttons="#skuBtns">
+    <form id="skuForm">
+        <br/>
+        <label>sku名称:</label>
+        <input id="skuName" name="skuName" class="easyui-textbox" data-options="" style="width:300px;"/>
+        <br/><br/>
+        <label>商品价格:</label>
+        <input id="price" name="price" class="easyui-numberbox" data-options="min:0,precision:2" style="width:300px;"/>
+        <br/><br/>
+        <label>商品重量（千克):</label>
+        <input id="weight" name="weight" class="easyui-numberbox" data-options="min:0,precision:2"
+               style="width:300px;"/>
+        <br/><br/>
+        <label>商品规格描述:</label>
+        <input id="skuDesc" name="skuDesc" class="easyui-textbox" data-options="multiline:true"
+               style="width:500px;height:100px"/>
+        <input id="spuIdForSku" name="spuId" type="hidden"/>
+
+        <input id="skuId" name="id" type="hidden"/>
+
+        <input id="catalog3IdForSku" name="catalog3Id" type="hidden"/>
+        <br/><br/>
+
+        <input id="skuInfo" name="skuInfo" type="hidden"/>
+
+
+        <div id="attrInfoGroup" title="平台属性" class="easyui-panel" style="padding:5px;">
+
+
+        </div>
+
+        <div id="spuSaleAttrGroup" title="销售属性" class="easyui-panel" style="padding:5px;">
+
+
+        </div>
+
+
+        <!----------------商品图片列表 ----------------------->
+
+        <table id="skuImgDg" class="easyui-datagrid" title="商品图片列表"
+               data-options="singleSelect:false,selectOnCheck:false,method:'get'">
+
+            <thead>
+                <tr>
+                    <!-- id  spu_id  img_name  img_url is_default -->
+                    <th data-options="field:'needSave',width:100,checkbox:true"></th>
+                    <th data-options="field:'id',width:100">图片编号</th>
+                    <th data-options="field:'spuId',width:100,hidden:true">图片所属spuId</th>
+                    <th data-options="field:'imgName',width:100">图片名</th>
+                    <th data-options="field:'imgUrl',width:100,formatter:skuImageInfoShowFormatter">图片信息</th>
+                    <th data-options="field:'isDefault',width:100,formatter:skuImageCheckCellFormatter">是否默认</th>
+                </tr>
+            </thead>
+        </table>
+
+        <br/><br/>
+
+        <!-------------->
+
+
+    </form>
+</div>
+<!----------------弹出框的按钮组----------------------->
+<div id="skuBtns">
+    <a href="#" class="easyui-linkbutton" onclick="saveSku()">保 存</a>
+    <a href="#" class="easyui-linkbutton" onclick="$('#sku_dlg').dialog('close')">关 闭</a>
+</div>
+
+
+<script th:inline="javascript">
+    //是否默认图片格式化选择
+   function skuImageCheckCellFormatter(value,row,index) {
+       if(value == 1){
+           return "<input name='isDefault' type='radio' checked/>";
+       }else{
+           return "<input name='isDefault' type='radio'/>";
+       }
+   }
+   function skuImageInfoShowFormatter(value,row,index) {
+       return "<img style='width:100px;height:auto' src='"+value+"'/>"
+   }
+
+
+
+
+
+</script>
+
+</body>
+</html>
