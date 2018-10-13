@@ -51,9 +51,18 @@
         <table id="spuSaleAttrDg" class="easyui-datagrid" title="销售属性列表"
                data-options="singleSelect:true,method:'get',toolbar:'#spuSaleAttrTootbar'" >
             <thead>
+    <!--       /**
+            *  {id:1,spuId:1,saleAttrId:1,saleAttrName:'颜色',saleAttrValues:[
+            *      {id:1,name:'红色'},
+            *      {id:2,name:'黑色'}
+            *  ]}-->
+    <!--表格以后要用的所有数据都写上，隐藏的数据不显示即可,保证表格这一行，保存的是全数据的全状态信息-->
                 <tr>
-                    <th data-options="field:'id',width:100">销售属性id</th>
-                    <th data-options="field:'imgName',width:300">销售属性名称</th>
+                    <th data-options="field:'id',width:100">标识</th>
+                    <th data-options="field:'saleAttrId',width:100">销售属性id</th>
+                    <th data-options="field:'spuId',width:100,hidden:true">spuId</th>
+                    <th data-options="field:'saleAttrName',width:300">销售属性名称</th>
+                    <th data-options="field:'saleAttrValues',hidden:true">销售所有值</th>
                 </tr>
             </thead>
         </table>
@@ -72,7 +81,7 @@
 </div>
 <!----------------弹出框的按钮组----------------------->
 <div id="spuBtns">
-    <a href="#" class="easyui-linkbutton">保 存</a>
+    <a href="#" class="easyui-linkbutton" onclick="saveAllSpuInfos()">保 存</a>
     <a href="#" class="easyui-linkbutton" onclick="$('#spu_dlg').dialog('close')">关 闭</a>
 </div>
 
@@ -80,6 +89,60 @@
 
 <script language="javascript">
     /*<![CDATA[*/
+    //保存所有spu的数据
+    function saveAllSpuInfos() {
+        //1、获取到所有的spu数据
+        /**
+         *     private String spuName;//商品名字
+         private String description;//描述
+         private Integer catalog3Id;//三级分类id
+
+         @TableField(exist = false)
+         private List<SpuImage> spuImages;//spu图片
+         @TableField(exist = false)
+         private List<SpuSaleAttr> spuSaleAttrs;//spu所有销售属性已经对应的
+         *
+         *
+         */
+
+        var spuName = $("#spuName").textbox('getValue');//商品名字
+        var description = $("#description").textbox('getValue');//描述
+        var catalog3Id = getSpuCatalog3Info().id;
+        var spuImages = $("#spuImgDg").datagrid("getRows");//所有图片
+        var spuSaleAttrs = $("#spuSaleAttrDg").datagrid("getRows");//所有销售属性的值
+
+        //加工spuImages
+        $.each(spuImages,function () {
+            if(isNaN(this.id)){
+                this.id = null;
+            }
+        })
+
+        var spuInfo = {
+            spuName:spuName,
+            description:description,
+            catalog3Id:catalog3Id,
+            spuImages:spuImages,
+            spuSaleAttrs:spuSaleAttrs
+        }
+        var jsonData = JSON.stringify(spuInfo);
+        $.ajax({
+            url:'spu/bigSave',
+            type:'post',
+            data:jsonData,
+            contentType:'application/json',
+            processData:false,
+            success:function (data) {
+                $("#spu_dlg").dialog('close');
+                refreshSpuListTable(null);
+            },
+            error:function () {
+                alert("服务器异常....")
+            }
+        })
+
+    }
+
 
     //弹出销售属性添加框
     $("#spuSaleAttrAddBtn").click(function () {
