@@ -14,6 +14,6 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Movie getMovie(String id) {
-        return new Movie("1","西游记");
+        return new Movie("1","西游记",new User());
     }
 }

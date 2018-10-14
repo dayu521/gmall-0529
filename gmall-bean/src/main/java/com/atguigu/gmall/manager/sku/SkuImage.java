@@ -13,5 +13,4 @@ public class SkuImage extends SuperBean {
     private Integer spuImgId;//图片对应的spu_image表中的id
     private String isDefault;//是否默认图片
 
-
 }
