@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atguigu.gmall.manager.mapper.sku.SkuImageMapper">
+
+    <resultMap id="toResult" type="com.atguigu.gmall.manager.sku.SkuAllSaveAttrAndValueTo">
+        <!--    id  spu_id  sale_attr_id  sale_attr_name
+            spu_id     -->
+        <id column="id" property="id"/>
+        <result column="spu_id" property="spuId"/>
+        <result column="sale_attr_id" property="saleAttrId"/>
+        <result column="sale_attr_name" property="saleAttrName"/>
+        <collection property="valueContent" ofType="com.atguigu.gmall.manager.sku.SkuAllSaveAttrValueContentTo">
+            <result column="is_check" property="isCheck"/>
+            <result column="sale_attr_value_id" property="saleAttrValueId"/>
+            <result column="sale_attr_value_name" property="saleAttrValueName"/>
+            <result column="sku_id" property="skuId"/>
+        </collection>
+    </resultMap>
+
+    <select id="getSkuAllSaveAttrAndValue" resultMap="toResult">
+        SELECT ssa.*,ssav.id sale_attr_value_id,
+            ssav.`sale_attr_value_name`,
+            ssav.`spu_id`,sku_value.`sku_id`,
+            IF(sku_value.sku_id IS NULL,0,1) is_check
+             FROM
+            `spu_sale_attr`  ssa
+        LEFT JOIN `spu_sale_attr_value` ssav
+        ON ssa.`spu_id`=ssav.`spu_id`
+        AND ssa.`sale_attr_id`=ssav.`sale_attr_id`
+        LEFT JOIN  `sku_sale_attr_value` sku_value
+         ON sku_value.`sale_attr_value_id`=ssav.`id`
+         AND sku_value.`sku_id`=#{id}
+        WHERE ssa.`spu_id`=#{spuId}
+    </select>
+</mapper>

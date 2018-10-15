@@ -81,13 +81,13 @@ public class GmallManagerServiceApplicationTests {
 		skuSaleAttrValues.add(new SkuSaleAttrValue(1,1,"颜色",1,"黑色"));
 		skuSaleAttrValues.add(new SkuSaleAttrValue(1,2,"版本",1,"6+64GB"));
 
-		SkuInfo skuInfo = new SkuInfo(51, new BigDecimal("50.99"), "三星 Glaxxxx9", "稳定爆炸..",
-				new BigDecimal("19.99"), 1, 3,
-				"http://xxxx.jpg",
-				skuImages, skuAttrValues, skuSaleAttrValues);
+//		SkuInfo skuInfo = new SkuInfo(51, new BigDecimal("50.99"), "三星 Glaxxxx9", "稳定爆炸..",
+//				new BigDecimal("19.99"), 1, 3,
+//				"http://xxxx.jpg",
+//				skuImages, skuAttrValues, skuSaleAttrValues);
 
-		String s = JSON.toJSONString(skuInfo);
-		System.out.println(s);
+		//String s = JSON.toJSONString(skuInfo);
+		//System.out.println(s);
 
 
 	}

@@ -38,6 +38,12 @@ public class SkuInfo extends SuperBean {
     @TableField(exist = false)
     private List<SkuSaleAttrValue> skuSaleAttrValues;//sku所有销售属性的值
 
+    @TableField(exist = false)
+    private List<SkuAllSaveAttrAndValueTo> skuAllSaveAttrAndValueTos;
+
+
+
+
 
 
 }

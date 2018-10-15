@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--1、使用thymeleaf，先加上thymeleaf的文档头（写起来ide就会有提示）-->
+<!--2、看到很多的th:xxx   每一个标签的任何属性，都有自己对应的th:xx 属性  前后分工合作很好；
+    th:属性  修改这个标签这个属性默认的值
+-->
+<!--3、${}获取请求域中的值-->
+<!--4、遍历  c:foreach  th:each； 想要遍历生成哪个标签就写在哪个标签的属性上
+th:each="当前遍历元素的名:${要遍历的集合}"
+-->
+<!--th:attr="style='color:red'"  指定任意的值  th:attr='属性名=属性值'-->
+<!--th语法的优先级，参照官方文档第10章  ，第4章是语法简介   18.19.20章列举表达式可以使用的工具类-->
+<div id="1" th:id="${divId}" th:text="${msg}">
+    你好
+</div>
+<table>
+    <tr>
+        <th>序号</th>
+        <th>名字</th>
+    </tr>
+    <tr th:each="stu:${students}">
+        <!--th:if="${#numbers.formatInteger(stu.id,3)%2==0}" -->
+        <!-- -->
+        <td th:text="${stu.id}" th:if="${stu.id%2==0}" th:attr="style='color:red'">1</td>
+        <td th:utext="${stu.stuName}">张三</td>
+    </tr>
+
+</table>
+
+</body>
+</html>

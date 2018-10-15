@@ -9,10 +9,7 @@ import com.atguigu.gmall.manager.mapper.sku.SkuImageMapper;
 import com.atguigu.gmall.manager.mapper.sku.SkuInfoMapper;
 import com.atguigu.gmall.manager.mapper.sku.SkuSaleAttrValueMapper;
 import com.atguigu.gmall.manager.mapper.spu.SpuSaleAttrMapper;
-import com.atguigu.gmall.manager.sku.SkuAttrValue;
-import com.atguigu.gmall.manager.sku.SkuImage;
-import com.atguigu.gmall.manager.sku.SkuInfo;
-import com.atguigu.gmall.manager.sku.SkuSaleAttrValue;
+import com.atguigu.gmall.manager.sku.*;
 import com.atguigu.gmall.manager.spu.SpuSaleAttr;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,5 +82,19 @@ public class SkuServiceImpl implements SkuService {
     @Override
     public List<SkuInfo> getSkuInfoBySpuId(Integer spuId) {
         return skuInfoMapper.selectList(new QueryWrapper<SkuInfo>().eq("spu_id",spuId));
+    }
+
+    @Override
+    public SkuInfo getSkuInfoBySkuId(Integer skuId) {
+        //1、先查出skuInfo基本信息
+        SkuInfo skuInfo = skuInfoMapper.selectById(skuId);
+        //2、查出这个skuInfo的所有图片信息
+        List<SkuImage> skuImages = skuImageMapper.selectList(new QueryWrapper<SkuImage>().eq("sku_id", skuInfo.getId()));
+        skuInfo.setSkuImages(skuImages);
+        //3、查出整个skuAttrValue信息
+        List<SkuAllSaveAttrAndValueTo> skuAllSaveAttrAndValueTos = skuImageMapper.getSkuAllSaveAttrAndValue(skuInfo.getId(),skuInfo.getSpuId());
+        skuInfo.setSkuAllSaveAttrAndValueTos(skuAllSaveAttrAndValueTos);
+
+        return skuInfo;
     }
 }

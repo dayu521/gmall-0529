@@ -30,4 +30,11 @@ public interface SkuService  {
      * @return
      */
     List<SkuInfo> getSkuInfoBySpuId(Integer spuId);
+
+    /**
+     * 查询某个sku的详细信息
+     * @param skuId
+     * @return
+     */
+    SkuInfo getSkuInfoBySkuId(Integer skuId);
 }

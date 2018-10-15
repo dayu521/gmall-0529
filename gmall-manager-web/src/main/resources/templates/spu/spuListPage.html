@@ -60,7 +60,9 @@
 
 <!--引入spu信息输入框页面-->
 <div th:include="spu/spuInfoPage"></div>
+<!--引入sku信息输入框页面-->
 <div th:include="sku/skuInfoPage"></div>
+<!--引入sku列表页面-->
 <div th:include="sku/skuListPage"></div>
 </body>
 <script language="javascript">
@@ -122,8 +124,8 @@
             url:'sku/spuImgaes?id='+getSelectedSpuInfoRow().id
         })
     }
-        //弹出增加sku的modal
-       function popAddSkuModal() {
+    //弹出增加sku的modal
+    function popAddSkuModal() {
            var spuInfo = getSelectedSpuInfoRow();
            if(spuInfo == null){
                $.messager.alert("警告","请先选择一个spu才能为他增加sku的信息")
@@ -138,60 +140,59 @@
            }
        }
 
-       //弹出spu下对应的所有sku列表信息
-        function popListSkuModal() {
-            var spuInfo = getSelectedSpuInfoRow();
-            if(spuInfo == null){
-                $.messager.alert("警告","请先选择一个spu才能为他增加sku的信息")
-            }else{
-                $("#skulist_dlg").dialog('open');
-                //给表格里面搞数据
-                $("#skulist_dg").datagrid({
-                    url:'sku/skuinfo?id='+getSelectedSpuInfoRow().id
-                })
-            }
-        }
-
-
-
-        //刷新spu商品信息列表
-        function refreshSpuListTable(id) {
-            var c3id = null;
-            if(id != null){
-                c3id = id;
-            }else{
-                c3id = getSpuCatalog3Info().id
-            }
-
-            //获取数据，刷新到表格中
-            $("#spulist_dg").datagrid({
-                url:'spu/info.json?catalog3Id='+c3id
+    //弹出spu下对应的所有sku列表信息
+    function popListSkuModal() {
+        var spuInfo = getSelectedSpuInfoRow();
+        if(spuInfo == null){
+            $.messager.alert("警告","请先选择一个spu才能为他增加sku的信息")
+        }else{
+            $("#skulist_dlg").dialog('open');
+            //给表格里面搞数据
+            $("#skulist_dg").datagrid({
+                url:'sku/skuinfo?id='+getSelectedSpuInfoRow().id
             })
         }
+    }
 
-        //打开spu信息编辑弹出框
-        function popAddSpuInfoModal() {
-            if(getSpuCatalog3Info()!=null){
-                $("#spu_dlg").dialog('open');
-            }else{
-                $.messager.alert('警告','请先选择三级分类');
-            };
+    //刷新spu商品信息列表
+    function refreshSpuListTable(id) {
+        var c3id = null;
+        if(id != null){
+            c3id = id;
+        }else{
+            c3id = getSpuCatalog3Info().id
         }
 
-        //获取三级分类的信息
-        function getSpuCatalog3Info(){
-            var id = $("#ctg3ForSpuList").combobox("getValue");
-            var text = $("#ctg3ForSpuList").combobox("getText");
-            var info = {id:id,name:text};
-            if(id == ""){
-                return null;
-            }
-            return info;
-        }
+        //获取数据，刷新到表格中
+        $("#spulist_dg").datagrid({
+            url:'spu/info.json?catalog3Id='+c3id
+        })
+    }
 
-        function getSelectedSpuInfoRow() {
-            return $("#spulist_dg").datagrid('getSelected')
+    //打开spu信息编辑弹出框
+    function popAddSpuInfoModal() {
+        if(getSpuCatalog3Info()!=null){
+            $("#spu_dlg").dialog('open');
+        }else{
+            $.messager.alert('警告','请先选择三级分类');
+        };
+    }
+
+    //获取三级分类的信息
+    function getSpuCatalog3Info(){
+        var id = $("#ctg3ForSpuList").combobox("getValue");
+        var text = $("#ctg3ForSpuList").combobox("getText");
+        var info = {id:id,name:text};
+        if(id == ""){
+            return null;
         }
+        return info;
+    }
+
+    //获取选中的spu信息
+    function getSelectedSpuInfoRow() {
+        return $("#spulist_dg").datagrid('getSelected')
+    }
 
     /*]]>*/
 </script>
