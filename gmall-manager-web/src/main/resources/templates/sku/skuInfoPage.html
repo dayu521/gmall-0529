@@ -48,7 +48,8 @@
         <!----------------商品图片列表 ----------------------->
 
         <table id="skuImgDg" class="easyui-datagrid" title="商品图片列表"
-               data-options="singleSelect:false,selectOnCheck:false,method:'get'">
+               data-options="singleSelect:false,selectOnCheck:true,checkOnSelect:false,
+               method:'get',idField:'id'">
 
             <thead>
                 <tr>
@@ -78,12 +79,158 @@
 
 
 <script th:inline="javascript">
+
+    //保存sku信息
+    function saveSku() {
+        //1、组装数据
+        /**
+         *   "skuAttrValues": [
+         {
+           "attrId": 1,
+           "skuId": 1,
+           "valueId": 1
+         },
+         {
+           "attrId": 2,
+           "skuId": 1,
+           "valueId": 2
+         }
+         ]
+         * @type {{}}
+         */
+        var bigSku = {};
+        bigSku.catalog3Id = getSpuCatalog3Info().id;
+        bigSku.price = $("#price").numberbox('getValue');
+        bigSku.skuDefaultImg = ""; //赋值为空串
+        bigSku.skuName = $("#skuName").textbox("getValue");
+        //找到表格中被选中的radio组件
+        if($(".imgRadio:checked").length==0){
+            $.messager.alert("错误","亲，请先选择一个默认图片");
+            return ;
+        }else{
+            bigSku.skuDefaultImg = $(".imgRadio:checked").parents("tr").find("td[field='imgUrl']").find("img").attr("src")
+        }
+        bigSku.skuDesc = $("#skuDesc").textbox("getValue");
+        bigSku.spuId = getSelectedSpuInfoRow().id;//spu的id
+        bigSku.weight = $("#weight").textbox("getValue");
+        //sku图片
+        bigSku.skuImages = getSelectedSkuImages();
+        bigSku.skuAttrValues = getSelectedSkuAttrValues();
+        bigSku.skuSaleAttrValues = getSelectedSkuSaleAttrValues();
+
+        console.log(bigSku);
+
+        $.ajax({
+            url:'sku/bigsave',
+            data:JSON.stringify(bigSku),
+            type:"POST",//请求方式
+            contentType:"application/json",
+            processData:false,
+            success:function (data) {
+                $.messager.alert("成功","信息保存成功了");
+                $("#sku_dlg").dialog('close');
+            },
+            error:function () {
+                $.messager.alert("错误","信息保存失败了")
+            }
+        });
+
+
+
+
+    }
+    //返回所有的平台属性选中的值信息
+    function getSelectedSkuAttrValues() {
+        /**
+         *
+         * JavaBean
+         *"attrId": 1,
+         "skuId": 1,  //新增以后才有sku的id
+         "valueId": 1
+         */
+        var skuAttrValuesArray = new Array();
+        //1、先找到所有平台属性的大label
+        $.each($(".infoGroupLabel"),function () {
+            //console.log(this);
+            var obj = {};
+            obj.attrId = $(this).find("label[attrid]").attr("attrid") //dom元素
+            obj.valueId = $(this).find("option:selected").val();
+            //console.log(obj)
+            skuAttrValuesArray.push(obj);
+        })
+        //2、在取出大label里面属性名的id和选中的option的id
+        return skuAttrValuesArray;
+
+    }
+    //返回所有的销售属性选中的值的信息
+    function getSelectedSkuSaleAttrValues() {
+        var skuSaleAttrValuesArray = new Array();
+        //1、先找到所有平台属性的大label
+        $.each($(".attrValueGroupLabel"),function () {
+            //console.log(this);
+            /**
+             *       "saleAttrId": 1,
+             "saleAttrName": "颜色",
+             "saleAttrValueId": 1,
+             "saleAttrValueName": "黑色",
+
+             */
+            var obj = {};
+            obj.saleAttrId = $(this).find("label[attrid]").attr("attrid") //dom元素
+            obj.saleAttrName = $(this).find("label[attrid]").text();
+            obj.saleAttrValueId = $(this).find("option:selected").val();
+            obj.saleAttrValueName = $(this).find("option:selected").text();
+            //console.log(obj)
+            skuSaleAttrValuesArray.push(obj);
+        })
+        return skuSaleAttrValuesArray;
+    }
+    
+    //返回所有的图片
+    function getSelectedSkuImages() {
+        var imgs = $("#skuImgDg").datagrid('getChecked');
+        /**
+         *
+         * javBean的
+         "imgName": "黑色正面", v
+         "imgUrl": "hei.jpg", v
+         "isDefault": "0",
+         "skuId": 1,   //忽略
+         "spuImgId": 111  v
+
+
+         页面的
+         id:207
+         imgName:"黑背.jpg"
+         imgUrl:"http://file.gmall.com/group1/M00/00/00/wKifhVvB70eANH3HAAAnqwz0YWg036.jpg"
+         spuId:53
+         */
+        var imgsResult = new Array();
+        $.each(imgs,function () {
+            var imgObj = {};
+            imgObj.imgName = this.imgName;
+            imgObj.imgUrl = this.imgUrl;
+            imgObj.spuImgId = this.id; //207
+
+            /**
+             * @type {jQuery}
+             */
+            //查到207这个图片这一行的radio是否被勾选
+            imgObj.isDefault = $("td[field='id']:contains("+imgObj.spuImgId+")").parents("tr")
+                .find("input[type='radio']:checked").length;
+
+            imgsResult.push(imgObj);
+        })
+
+        return imgsResult;
+    }
+
     //是否默认图片格式化选择
    function skuImageCheckCellFormatter(value,row,index) {
        if(value == 1){
-           return "<input name='isDefault' type='radio' checked/>";
+           return "<input class='imgRadio' name='isDefault' type='radio' checked/>";
        }else{
-           return "<input name='isDefault' type='radio'/>";
+           return "<input class='imgRadio' name='isDefault' type='radio'/>";
        }
    }
    function skuImageInfoShowFormatter(value,row,index) {

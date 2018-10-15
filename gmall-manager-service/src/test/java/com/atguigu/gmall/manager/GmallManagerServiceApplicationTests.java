@@ -1,7 +1,12 @@
 package com.atguigu.gmall.manager;
 
+import com.alibaba.fastjson.JSON;
 import com.atguigu.gmall.manager.mapper.BaseCatalog1Mapper;
 import com.atguigu.gmall.manager.mapper.UserMapper;
+import com.atguigu.gmall.manager.sku.SkuAttrValue;
+import com.atguigu.gmall.manager.sku.SkuImage;
+import com.atguigu.gmall.manager.sku.SkuInfo;
+import com.atguigu.gmall.manager.sku.SkuSaleAttrValue;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,8 +31,8 @@ import java.util.List;
  *
  */
 @Slf4j
-@RunWith(SpringRunner.class)
-@SpringBootTest
+//@RunWith(SpringRunner.class)
+//@SpringBootTest
 public class GmallManagerServiceApplicationTests {
 
 	@Autowired
@@ -36,6 +43,55 @@ public class GmallManagerServiceApplicationTests {
 
 	@Autowired
 	CatalogService catalogService;
+
+	@Test
+	public void testSkuInfoJson(){
+
+		/**
+		 *     private Integer skuId;//当前图片对应的skuId
+		 private String imgName;//图片的名字
+		 private String imgUrl;//图片的url
+		 private Integer spuImgId;//图片对应的spu_image表中的id
+		 private String isDefault;//是否默认图片
+		 */
+		List<SkuImage> skuImages = new ArrayList<>();
+		skuImages.add(new SkuImage(1,"黑色正面","hei.jpg",111,"0"));
+		skuImages.add(new SkuImage(1,"黑色范面","heifan.jpg",112,"1"));
+
+
+		/**
+		 *     private Integer attrId;//平台属性id
+		 private Integer valueId;//平台属性值id
+		 private Integer skuId;//对应的skuId
+		 */
+		List<SkuAttrValue> skuAttrValues = new ArrayList<>();
+		skuAttrValues.add(new SkuAttrValue(1,1,1));
+		skuAttrValues.add(new SkuAttrValue(2,2,1));
+
+		/**
+		 *     //sku_id  sale_attr_id  sale_attr_value_id  sale_attr_name  sale_attr_value_name
+		 private Integer skuId;//21
+		 private Integer saleAttrId;//销售属性的id
+		 private String saleAttrName;//销售属性的名字（冗余） ===【颜色】
+
+		 private Integer saleAttrValueId;//销售属性值id
+		 private Integer saleAttrValueName;//销售属性值的名字  ====【红色】
+		 */
+		List<SkuSaleAttrValue> skuSaleAttrValues = new ArrayList<>();
+		skuSaleAttrValues.add(new SkuSaleAttrValue(1,1,"颜色",1,"黑色"));
+		skuSaleAttrValues.add(new SkuSaleAttrValue(1,2,"版本",1,"6+64GB"));
+
+		SkuInfo skuInfo = new SkuInfo(51, new BigDecimal("50.99"), "三星 Glaxxxx9", "稳定爆炸..",
+				new BigDecimal("19.99"), 1, 3,
+				"http://xxxx.jpg",
+				skuImages, skuAttrValues, skuSaleAttrValues);
+
+		String s = JSON.toJSONString(skuInfo);
+		System.out.println(s);
+
+
+	}
+
 
 	@Test
 	public void testCatalogService(){

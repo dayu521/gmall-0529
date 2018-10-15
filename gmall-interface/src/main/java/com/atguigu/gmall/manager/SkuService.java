@@ -1,5 +1,6 @@
 package com.atguigu.gmall.manager;
 
+import com.atguigu.gmall.manager.sku.SkuInfo;
 import com.atguigu.gmall.manager.spu.SpuSaleAttr;
 
 import java.util.List;
@@ -16,4 +17,17 @@ public interface SkuService  {
      * @return
      */
     List<SpuSaleAttr> getSpuSaleAttrBySpuId(Integer spuId);
+
+    /**
+     * 大保存sku
+     * @param skuInfo
+     */
+    void saveBigSkuInfo(SkuInfo skuInfo);
+
+    /**
+     * 获取spu对应的skuInfo
+     * @param spuId
+     * @return
+     */
+    List<SkuInfo> getSkuInfoBySpuId(Integer spuId);
 }
