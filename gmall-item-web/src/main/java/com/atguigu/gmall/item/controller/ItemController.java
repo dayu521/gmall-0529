@@ -3,6 +3,7 @@ package com.atguigu.gmall.item.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.atguigu.gmall.manager.SkuService;
+import com.atguigu.gmall.manager.sku.SkuAttrValueMappingTo;
 import com.atguigu.gmall.manager.sku.SkuInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,8 +11,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -21,11 +24,33 @@ public class ItemController {
     SkuService skuService;
 
     @RequestMapping("/{skuId}.html")
-    public String itemPage(@PathVariable("skuId") Integer skuId, Model model){
+    public String itemPage(@PathVariable("skuId") Integer skuId, Model model, HttpServletRequest request){
         //1、查出sku的详细信息
-
-        SkuInfo skuInfo = skuService.getSkuInfoBySkuId(skuId);
+        //2、service应该使用缓存机制
+        SkuInfo skuInfo = null;
+        try {
+            skuInfo = skuService.getSkuInfoBySkuId(skuId);
+            if(skuInfo == null){
+                //跳转到商品不存在页
+            }
+        } catch (InterruptedException e) {
+            //
+        }
         model.addAttribute("skuInfo",skuInfo);
+
+        //缓存一下？业务
+        //先判断缓存有没有
+
+        /**
+         * sku_id  spu_id  sku_name                  sale_attr_value_id  sale_attr_value_name
+         ------  ------  ------------------------  ------------------  ----------------------
+         29      55  (NULL)                    118,117             裸机版,黑色
+         30      55  联想s60银色套餐一                119,116             套餐一,红色
+         */
+        Integer spuId = skuInfo.getSpuId();
+        //2、查出当前sku对应的spu下面所有sku销售属性值的组合
+        List<SkuAttrValueMappingTo> valueMappingTos = skuService.getSkuAttrValueMapping(spuId);
+        model.addAttribute("skuValueMapping",valueMappingTos);
         return "item";
     }
 

@@ -224,7 +224,8 @@
                         <dl>
                             <dt th:text="${saleAttr.saleAttrName}">选择颜色</dt>
 
-                            <dd th:each="v:${saleAttr.valueContent}" th:class="${v.isCheck==1?'redborder':''}">
+                            <!--为了方便期间遍历的时候把销售属性值的id也放在这个dd-->
+                            <dd th:value="${v.saleAttrValueId}" th:each="v:${saleAttr.valueContent}" th:class="${v.isCheck==1?'redborder':''}">
                                 <div th:text="${v.saleAttrValueName}">
                                     摩卡金
                                 </div>
@@ -232,6 +233,21 @@
                         </dl>
                     </div>
                     <br/>
+                    <div>
+                        <!--这个input的name就是销售属性值id的组合字符串如：118,177
+                            这个input的value值就是这个销售属性值id的组合字符串对应的sku的id；
+                        -->
+                       <input th:name="${valueMapping.saleAttrValueIdMapping}" name="118,117"
+                              th:value="${valueMapping.skuId}" value="30" type="hidden"
+                              th:each="valueMapping:${skuValueMapping}"/>
+                        <!--<label
+                               th:text="
+                               ${valueMapping.saleAttrValueIdMapping
+                               +'==>'+valueMapping.saleAttrValueNameMapping
+                               +'=对应的sku=>'+valueMapping.skuId}
+                        "></label>-->
+
+                    </div>
                 </div>
 
                 <div class="box-btns clear">

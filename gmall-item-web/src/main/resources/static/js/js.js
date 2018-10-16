@@ -55,10 +55,30 @@ $(function(){
 		});
 
 
-
-	
+    /**
+	 * 1、后台告诉页面每一对销售属性值的组合对应的skuId是多少
+	 * 2、页面找到自己选中的skuAttrValueId的组合，找到对应的skuId；
+	 * 3、跳转到这个skuId对应的页面
+     */
+    //切换skuid
 	    function switchSkuId() {
-		 
+		 	//1、我们需要知道每一个选中的id是什么，组合在一起
+			var ids = new Array();
+			$.each($("dd.redborder"),function () {
+                ids.push($(this).attr('value'))
+            });
+            ids = ids.reverse();
+			var idsStr = ids.join(','); //118,117
+			//2、如何知道这个idsStr对应的skuId是多少？
+			var skuId = $("input[name='"+idsStr+"']").val();
+			//跳转到指定位置
+			if(skuId == undefined){
+				return;
+			}else {
+                location.href='/'+skuId+".html";
+			}
+
+
         }
 
 

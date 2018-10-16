@@ -12,11 +12,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.junit4.SpringRunner;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 1、导入mybatis-plus的starter
@@ -31,8 +37,8 @@ import java.util.List;
  *
  */
 @Slf4j
-//@RunWith(SpringRunner.class)
-//@SpringBootTest
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class GmallManagerServiceApplicationTests {
 
 	@Autowired
@@ -43,6 +49,47 @@ public class GmallManagerServiceApplicationTests {
 
 	@Autowired
 	CatalogService catalogService;
+
+
+	@Autowired
+	StringRedisTemplate stringRedisTemplate; //k-v都是string的
+
+	@Autowired  //只需要注入jedis连接池
+	JedisPool jedisPool;
+
+
+	@Test
+	public void testJedisPool(){
+		Jedis jedis = jedisPool.getResource();
+		String djsklajdal = jedis.get("djsklajdal");
+		System.out.println(djsklajdal == null);
+
+		String s = jedis.get("sku:77:info");
+		System.out.println("null".equals(s));
+	}
+
+	//RedisTemplate //k-v都是object的
+	//string list set hash zset
+	@Test
+	public void testRedisTemplate(){
+
+		//1、创建
+		//JedisPool jedisPool = new JedisPool();
+		//jedisPool.initPool();...
+		//2、从池中获取jedis客户端；
+		//Jedis jedis = jedisPool.getResource();
+		//3、springboot知道我么要用jedis，也自动配合了jedis的连接工厂
+
+
+		ValueOperations<String, String> opsForValue = stringRedisTemplate.opsForValue();
+
+		opsForValue.set("hello","world",20, TimeUnit.SECONDS);
+
+		System.out.println("666.////");
+		String hello = opsForValue.get("hello");
+		System.out.println("返回的是："+hello);
+	}
+
 
 	@Test
 	public void testSkuInfoJson(){

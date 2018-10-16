@@ -25,9 +25,26 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
+
+
+        <!--整合redis-->
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
+        </dependency>
+
+        <!--1、引入redis的starter；redis的所有都自动配置了-->
+        <!--2、在application.properties中配置redis的相关信息-->
+        <!--3、详见RedisProperties；里面所有redis能配置的属性-->
+        <!--4、操作redis有两种方式
+                1)、用jedis（完整支持redis所有操作）；
+
+                2)、用springboot给我们自动配置的 redisTemplate；
+                    redisTemplate：目前缺少都redis某些操作的支持
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
     </dependencies>
