@@ -1,6 +1,7 @@
 package com.atguigu.gmall.manager;
 
 import com.alibaba.fastjson.JSON;
+import com.atguigu.gmall.manager.constant.RedisCacheKeyConst;
 import com.atguigu.gmall.manager.mapper.BaseCatalog1Mapper;
 import com.atguigu.gmall.manager.mapper.UserMapper;
 import com.atguigu.gmall.manager.sku.SkuAttrValue;
@@ -21,6 +22,7 @@ import redis.clients.jedis.JedisPool;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -56,6 +58,15 @@ public class GmallManagerServiceApplicationTests {
 
 	@Autowired  //只需要注入jedis连接池
 	JedisPool jedisPool;
+
+	@Test
+	public void testLock(){
+		Jedis jedis = jedisPool.getResource();
+		String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+		jedis.eval(script,
+				Collections.singletonList("AAA"),
+				Collections.singletonList("BBB"));
+	}
 
 
 	@Test

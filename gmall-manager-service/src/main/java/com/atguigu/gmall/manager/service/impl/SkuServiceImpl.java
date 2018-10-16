@@ -20,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -93,6 +95,25 @@ public class SkuServiceImpl implements SkuService {
         return skuInfoMapper.selectList(new QueryWrapper<SkuInfo>().eq("spu_id",spuId));
     }
 
+    /**
+     * 1、查缓存===分布式锁的使用
+     *      1.1）、缓存中有
+     *          直接返回结果，return
+     *      1.2）、缓存中有但是是"null"串
+     *          说明之前数据库是null串，也是给其他调用者返回null
+     *      1.3）、缓存中没有
+     *          1.3.1）、获取锁 jedis.set(k,v,"NX","EX",1000(超时));保证占位和超时是原子操作
+     *              1.3.1.1）、获取到了
+     *                  1.3.1.1.1）、执行业务逻辑
+     *                  1.3.1.1.2）、缓存执行结果
+     *                  1.3.1.1.3）、释放锁
+     *              1.3.1.2）、没获取到
+     *                  自旋即可
+     *
+     * @param skuId
+     * @return
+     * @throws InterruptedException
+     */
     @Override
     public SkuInfo getSkuInfoBySkuId(Integer skuId) throws InterruptedException {
         Jedis jedis = jedisPool.getResource();
@@ -103,22 +124,27 @@ public class SkuServiceImpl implements SkuService {
 
         //先去缓存中看看
         String s = jedis.get(key);
+
         if(s!=null){
             //如果缓存中有，转成我们想要的对象
             log.debug("缓存中找到数据了：{}",skuId);
             result = JSON.parseObject(s, SkuInfo.class);
             jedis.close();
-        }else if("null".equals(s)){
+            return result;
+        }
+        if("null".equals(s)){
             //防止缓存穿透的
             //缓存中存了，只不过这是你数据库给我的
            //之前数据库查过，但是没有，所以给缓存中放了一个null串
             return null;
-        }else{
+        }
+        if(s==null){
             //当这个数据等于null的时候
             //缓存中没有必须从数据库先查出来，在放到缓存
             //我们需要加锁
             // 拿到锁再去查数据库；
-            String lock = jedis.set(RedisCacheKeyConst.LOCK_SKU_INFO, "ABC", "NX", "EX", RedisCacheKeyConst.LOCK_TIMEOUT);
+            String token = UUID.randomUUID().toString();
+            String lock = jedis.set(RedisCacheKeyConst.LOCK_SKU_INFO, token, "NX", "EX", RedisCacheKeyConst.LOCK_TIMEOUT);
 
             if(lock == null){
                 //没有拿到锁
@@ -145,14 +171,30 @@ public class SkuServiceImpl implements SkuService {
                 }
 
                 //手动释放，即使释放失败，也会自动过期删除
-                jedis.del(RedisCacheKeyConst.LOCK_SKU_INFO);
+                //判断是否还是我的锁，如果是才删
+                //NB之处....释放锁；解锁有问题吗？删锁的错误姿势
+//                String redisToken = jedis.get(RedisCacheKeyConst.LOCK_SKU_INFO);
+//                if(token.equals(redisToken)){
+//                    jedis.del(RedisCacheKeyConst.LOCK_SKU_INFO);
+//                }else{
+//                    //业务逻辑已经超出锁的时间了，别人已经持有锁了，我们不要把别人锁删了
+//                }
+
+                //脚本；正确的解锁；一定要是原子操作
+                String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+                jedis.eval(script,
+                        Collections.singletonList(RedisCacheKeyConst.LOCK_SKU_INFO),
+                        Collections.singletonList(token));
+
+
+
             }
             jedis.close();
+            return result;
         }
 
+        return null;
 
-
-        return result;
     }
 
     @Override
