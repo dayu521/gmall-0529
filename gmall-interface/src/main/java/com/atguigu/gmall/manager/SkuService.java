@@ -1,5 +1,6 @@
 package com.atguigu.gmall.manager;
 
+import com.atguigu.gmall.manager.es.SkuBaseAttrEsVo;
 import com.atguigu.gmall.manager.sku.SkuAttrValueMappingTo;
 import com.atguigu.gmall.manager.sku.SkuInfo;
 import com.atguigu.gmall.manager.spu.SpuSaleAttr;
@@ -45,4 +46,12 @@ public interface SkuService  {
      * @return
      */
     List<SkuAttrValueMappingTo> getSkuAttrValueMapping(Integer spuId);
+
+
+    /**
+     * 获取sku所有平台属性值的id集合
+     * @param skuId
+     * @return
+     */
+    List<SkuBaseAttrEsVo> getSkuBaseAttrValueIds(Integer skuId);
 }

@@ -2,6 +2,7 @@ package com.atguigu.gmall.item.controller;
 
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.atguigu.gmall.manager.SkuEsService;
 import com.atguigu.gmall.manager.SkuService;
 import com.atguigu.gmall.manager.sku.SkuAttrValueMappingTo;
 import com.atguigu.gmall.manager.sku.SkuInfo;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -22,6 +25,9 @@ public class ItemController {
 
     @Reference
     SkuService skuService;
+
+
+
 
     @RequestMapping("/{skuId}.html")
     public String itemPage(@PathVariable("skuId") Integer skuId, Model model, HttpServletRequest request){

@@ -2,16 +2,14 @@ package com.atguigu.gmall.manager.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.atguigu.gmall.manager.BaseAttrInfo;
+import com.atguigu.gmall.manager.SkuEsService;
 import com.atguigu.gmall.manager.SkuService;
 import com.atguigu.gmall.manager.SpuInfoService;
 import com.atguigu.gmall.manager.sku.SkuInfo;
 import com.atguigu.gmall.manager.spu.SpuImage;
 import com.atguigu.gmall.manager.spu.SpuSaleAttr;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,6 +23,24 @@ public class SkuController {
 
     @Reference
     SpuInfoService spuInfoService;
+
+    @Reference
+    SkuEsService skuEsService;
+
+
+    /**
+     * 传入SkuId，将这个商品上架（缓存到es中）
+     * @param skuId
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/onSale")
+    public String onSale(@RequestParam("skuId") Integer skuId){
+
+        //这个方法最好是一个异步方法，不要阻塞其他请求了
+        skuEsService.onSale(skuId);
+        return "ok";
+    }
 
 
     @RequestMapping("/skuinfo")
