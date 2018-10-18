@@ -127,6 +127,12 @@ public class SkuServiceImpl implements SkuService {
         //先去缓存中看看
         String s = jedis.get(key);
 
+        if("null".equals(s)){
+            //防止缓存穿透的
+            //缓存中存了，只不过这是你数据库给我的
+            //之前数据库查过，但是没有，所以给缓存中放了一个null串
+            return null;
+        }
         if(s!=null){
             //如果缓存中有，转成我们想要的对象
             log.debug("缓存中找到数据了：{}",skuId);
@@ -134,19 +140,13 @@ public class SkuServiceImpl implements SkuService {
             jedis.close();
             return result;
         }
-        if("null".equals(s)){
-            //防止缓存穿透的
-            //缓存中存了，只不过这是你数据库给我的
-           //之前数据库查过，但是没有，所以给缓存中放了一个null串
-            return null;
-        }
         if(s==null){
             //当这个数据等于null的时候
             //缓存中没有必须从数据库先查出来，在放到缓存
             //我们需要加锁
             // 拿到锁再去查数据库；
             String token = UUID.randomUUID().toString();
-            String lock = jedis.set(RedisCacheKeyConst.LOCK_SKU_INFO, token, "NX", "EX", RedisCacheKeyConst.LOCK_TIMEOUT);
+            String lock = jedis.set(RedisCacheKeyConst.LOCK_SKU_INFO+skuId, token, "NX", "EX", RedisCacheKeyConst.LOCK_TIMEOUT);
 
             if(lock == null){
                 //没有拿到锁
@@ -185,7 +185,7 @@ public class SkuServiceImpl implements SkuService {
                 //脚本；正确的解锁；一定要是原子操作
                 String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
                 jedis.eval(script,
-                        Collections.singletonList(RedisCacheKeyConst.LOCK_SKU_INFO),
+                        Collections.singletonList(RedisCacheKeyConst.LOCK_SKU_INFO+skuId),
                         Collections.singletonList(token));
             }
             jedis.close();
@@ -214,6 +214,11 @@ public class SkuServiceImpl implements SkuService {
         }
 
         return results;
+    }
+
+    @Override
+    public List<BaseAttrInfo> getBaseAttrInfoByAttrValueIdIn(List<Integer> valueIds) {
+        return baseAttrInfoMapper.getBaseAttrInfoByAttrValueIdIn(valueIds);
     }
 
     private SkuInfo getFromDb(Integer skuId){

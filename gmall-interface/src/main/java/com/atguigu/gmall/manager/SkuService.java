@@ -54,4 +54,11 @@ public interface SkuService  {
      * @return
      */
     List<SkuBaseAttrEsVo> getSkuBaseAttrValueIds(Integer skuId);
+
+    /**
+     * 根据属性值的集合找出这个属性值所在的平台属性下的所有属性值
+     * @param valueIds
+     * @return
+     */
+    List<BaseAttrInfo> getBaseAttrInfoByAttrValueIdIn(List<Integer> valueIds);
 }
