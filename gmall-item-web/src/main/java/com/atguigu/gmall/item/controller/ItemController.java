@@ -57,8 +57,15 @@ public class ItemController {
         //2、查出当前sku对应的spu下面所有sku销售属性值的组合
         List<SkuAttrValueMappingTo> valueMappingTos = skuService.getSkuAttrValueMapping(spuId);
         model.addAttribute("skuValueMapping",valueMappingTos);
+
+        //3、增加点击率；更新es的hotScore值
+        //redis  把redis中这个商品的热度保存起来增加即可
+        skuService.incrSkuHotScore(skuId);
+
+
         return "item";
     }
+
 
 //      测试语法
 //      @RequestMapping("/{skuId}.html")

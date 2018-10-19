@@ -54,4 +54,17 @@ public interface SkuService  {
      * @return
      */
     List<SkuBaseAttrEsVo> getSkuBaseAttrValueIds(Integer skuId);
+
+    /**
+     * 查询所有涉及到的平台属性以及值
+     * @param valueIds  平台属性值的集合
+     * @return
+     */
+    List<BaseAttrInfo> getBaseAttrInfoGroupByValueId(List<Integer> valueIds);
+
+    /**
+     * 增加某个商品的热度
+     * @param skuId
+     */
+    void incrSkuHotScore(Integer skuId);
 }

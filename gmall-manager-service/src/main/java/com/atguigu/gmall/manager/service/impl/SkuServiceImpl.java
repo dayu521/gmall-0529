@@ -1,8 +1,10 @@
 package com.atguigu.gmall.manager.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.atguigu.gmall.manager.BaseAttrInfo;
+import com.atguigu.gmall.manager.SkuEsService;
 import com.atguigu.gmall.manager.SkuService;
 import com.atguigu.gmall.manager.constant.RedisCacheKeyConst;
 import com.atguigu.gmall.manager.es.SkuBaseAttrEsVo;
@@ -17,6 +19,7 @@ import com.atguigu.gmall.manager.spu.SpuSaleAttr;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -29,6 +32,9 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class SkuServiceImpl implements SkuService {
+
+    @Reference
+    SkuEsService skuEsService;
 
     @Autowired
     BaseAttrInfoMapper baseAttrInfoMapper;
@@ -146,7 +152,7 @@ public class SkuServiceImpl implements SkuService {
             //我们需要加锁
             // 拿到锁再去查数据库；
             String token = UUID.randomUUID().toString();
-            String lock = jedis.set(RedisCacheKeyConst.LOCK_SKU_INFO, token, "NX", "EX", RedisCacheKeyConst.LOCK_TIMEOUT);
+            String lock = jedis.set(RedisCacheKeyConst.LOCK_SKU_INFO+":"+skuId, token, "NX", "EX", RedisCacheKeyConst.LOCK_TIMEOUT);
 
             if(lock == null){
                 //没有拿到锁
@@ -185,13 +191,13 @@ public class SkuServiceImpl implements SkuService {
                 //脚本；正确的解锁；一定要是原子操作
                 String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
                 jedis.eval(script,
-                        Collections.singletonList(RedisCacheKeyConst.LOCK_SKU_INFO),
+                        Collections.singletonList(RedisCacheKeyConst.LOCK_SKU_INFO+":"+skuId),
                         Collections.singletonList(token));
             }
             jedis.close();
             return result;
         }
-
+        jedis.close();
         return null;
 
     }
@@ -214,6 +220,25 @@ public class SkuServiceImpl implements SkuService {
         }
 
         return results;
+    }
+
+    @Override
+    public List<BaseAttrInfo> getBaseAttrInfoGroupByValueId(List<Integer> valueIds) {
+
+
+        return baseAttrInfoMapper.getBaseAttrInfoGroupByValueId(valueIds);
+    }
+
+    //增加商品热度信息
+    @Async
+    @Override
+    public void incrSkuHotScore(Integer skuId) {
+        Jedis jedis = jedisPool.getResource();
+        Long hincrBy = jedis.hincrBy(RedisCacheKeyConst.SKU_HOT_SCORE, skuId + "", 1);
+        if(hincrBy % 3 == 0){
+            //更新ES的热度
+            skuEsService.updateHotScore(skuId,hincrBy);
+        }
     }
 
     private SkuInfo getFromDb(Integer skuId){

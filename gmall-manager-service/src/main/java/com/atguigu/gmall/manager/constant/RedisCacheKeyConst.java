@@ -12,5 +12,10 @@ public class RedisCacheKeyConst {
     public static final String LOCK_SKU_INFO = "gmall:lock:sku";
     public static final Integer SKU_INFO_NULL_TIMEOUT= 60*5; //setex是秒为单位的
 
+    //hash    gmall:sku:hotscore  1  100
+    //        gmall:sku:hotscore  2  1000
+    //
+    //keys * ,flushdb
+    public static final String SKU_HOT_SCORE = "gmall:sku:hotscore";//商品热度在redis中保存的值
 
 }
