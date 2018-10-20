@@ -1,6 +1,7 @@
 package com.atguigu.gmall.search.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.atguigu.gmall.annotation.LoginRequired;
 import com.atguigu.gmall.manager.SkuEsService;
 import com.atguigu.gmall.manager.es.SkuSearchParamEsVo;
 import com.atguigu.gmall.manager.es.SkuSearchResultEsVo;
@@ -15,6 +16,20 @@ public class ListController {
 
     @Reference
     SkuEsService skuEsService;
+
+
+
+    @LoginRequired  //需要登陆
+    @RequestMapping("/hehe")
+    public String hehe(){
+        //想要用户信息
+        //eyJoZWFkSW1nIjoiMyIsIm5pY2tOYW1lIjoi5byg5LiJIiwibG9naW5OYW1lIjoiemhhbmdzYW4iLCJpZCI6MywiZW1haWwiOiJhdGd1aWd1LmNvbSJ9
+        //以上解码就是用户信息
+
+
+        return "hehe";
+    }
+
     /**
      * 将所有页面可能提交的查询数据封装入参
      * @param paramEsVo
