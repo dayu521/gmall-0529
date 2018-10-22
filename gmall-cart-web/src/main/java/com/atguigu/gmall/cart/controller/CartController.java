@@ -99,7 +99,8 @@ public class CartController {
     @RequestMapping("/addToCart")
     public String addToCart(Integer skuId, Integer num,
                             HttpServletRequest request,
-                            HttpServletResponse response) throws InterruptedException {
+                            HttpServletResponse response)
+            throws InterruptedException {
 
 
         //判断是否登陆，登陆了用user:cart:12:info在redis中
