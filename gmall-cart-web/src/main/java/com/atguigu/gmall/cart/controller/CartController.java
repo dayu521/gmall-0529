@@ -11,6 +11,7 @@ import com.atguigu.gmall.utils.CookieUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,27 @@ public class CartController {
         //TODO  4、清空购物车
         //TODO 以上怎么做？都用ajax
         return "";
+    }
+
+    /**
+     * 购物车项勾选
+     * @param skuId
+     * @param checkFlag true代表勾选了
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("checkItem")
+    public String checkItem(Integer skuId,Boolean checkFlag,HttpServletRequest request){
+        Map<String,Object> userInfo = (Map<String, Object>) request.getAttribute(CookieConstant.LOGIN_USER_INFO_KEY);
+        String tempCartKey = CookieUtils.getCookieValue(request, CookieConstant.COOKIE_CART_KEY);
+
+        boolean loginFlag = userInfo==null?false:true;
+        int userId = 0;
+        try {
+           Integer.parseInt(userInfo.get("id").toString());
+        }catch (Exception e){}
+        cartService.checkItem(skuId,checkFlag,tempCartKey,userId,loginFlag);
+        return "ok";
     }
 
 

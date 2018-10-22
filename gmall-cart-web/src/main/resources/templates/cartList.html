@@ -92,11 +92,13 @@
 
                     <div>
                         <ol>
-                            <li><input type="checkbox"   class="check"   onchange="checkSku(this)"  /></li>
+                            <li>
+                                <input type="checkbox"   class="check" th:checked="${cartItem.check}"
+                                       th:onchange="'checkSku('+${cartItem.skuItem.id}+',this)'" /></li>
                             <li>
                                 <dt><img th:src="${cartItem.skuItem.skuDefaultImg}"
                                          src="img\shop1.jpg" alt=""></dt>
-                                <dd  onclick="toItem(1)">
+                                <dd  th:onclick="'toItem('+${cartItem.skuItem.id}+')'">
                                     <p>
                                         <span  th:text="${cartItem.skuItem.skuName}">TCL 55A950C 55英寸32核</span>
                                     </p>
@@ -246,17 +248,14 @@
        window.location.href="http://www.gmallsso.com/login?originUrl="+s;
     }
 
-    function checkSku( chkbox){
-        console.log($(chkbox));
-       var skuId= $(chkbox).attr("value");
-       var checked=$(chkbox).prop("checked");
-       var isCheckedFlag="0";
-       if(checked){
-           isCheckedFlag="1";
+    function checkSku( skuId,_this){
+       var skuId= skuId;
+       var checked=$(_this).prop("checked");
+       var param = {
+           checkFlag: checked,
+           skuId: skuId
        }
-        var param="isChecked="+isCheckedFlag+"&"+"skuId="+skuId;
-        console.log(param);
-        $.post("checkCart",param,function (data) {
+        $.post("checkItem",param,function (data) {
             sumSumPrice();
         });
 

@@ -217,6 +217,25 @@ public class CartServiceImpl implements CartService {
         return cartItem;
     }
 
+    @Override
+    public void checkItem(Integer skuId, Boolean checkFlag, String tempCartKey, Integer userId,
+                          boolean loginFlag) {
+        //购物车勾选
+        String caryKey = loginFlag?CartConstant.USER_CART_PREFIX+ userId:tempCartKey;
+        CartItem cartItem = getCartItemInfo(caryKey, skuId);
+        //设置勾选状态
+        cartItem.setCheck(checkFlag);
+
+        //修改购物车数据
+        String string = JSON.toJSONString(cartItem);
+        Jedis jedis = jedisPool.getResource();
+        jedis.hset(caryKey,skuId+"",string);
+        jedis.close();
+
+    }
+
+
+
 
     /**
      * 
