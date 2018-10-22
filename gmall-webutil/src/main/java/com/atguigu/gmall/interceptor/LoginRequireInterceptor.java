@@ -3,6 +3,8 @@ package com.atguigu.gmall.interceptor;
 import com.atguigu.gmall.annotation.LoginRequired;
 import com.atguigu.gmall.constant.CookieConstant;
 import com.atguigu.gmall.utils.CookieUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
@@ -28,12 +30,16 @@ public class LoginRequireInterceptor implements HandlerInterceptor {
         //1、先判断这个方法是否需要登陆后才能访问，拿到我们将要执行的目标方法
         HandlerMethod handlerMethod = (HandlerMethod) o;
         LoginRequired annotation = handlerMethod.getMethodAnnotation(LoginRequired.class);
+
         if(annotation!=null){
             //标了注解
 
             //1、验证是否是第一次过来只是带了一个参数位置的token字符串
             String token = request.getParameter("token");
             String cookieValue = CookieUtils.getCookieValue(request, CookieConstant.SSO_COOKIE_NAME);
+            //获取是否需要一定登陆
+            boolean needLogin = annotation.needLogin();
+
 
             if(!StringUtils.isEmpty(token)){
                 //只要这个参数有 ，说明登陆成功了我们要设置这个cookie
@@ -62,13 +68,16 @@ public class LoginRequireInterceptor implements HandlerInterceptor {
                         Map<String, Object> map = CookieUtils.resolveTokenData(cookieValue);
                         //解好以后将用户信息放进请求域中，当次请求就能用了；
 
-                        request.setAttribute("userInfo",map);
+                        request.setAttribute(CookieConstant.LOGIN_USER_INFO_KEY,map);
                         return true;
                     }else{
                         //验证失败，重新去登陆
-                        String redirectUrl = "http://www.gmallsso.com/login?originUrl="+request.getRequestURL();
-                        response.sendRedirect(redirectUrl);
-                        return false;
+                        if(needLogin == true){
+                            String redirectUrl = "http://www.gmallsso.com/login?originUrl="+request.getRequestURL();
+                            response.sendRedirect(redirectUrl);
+                            return false;
+                        }
+                        return true;
                     }
                 }catch (Exception e){
                     //远程服务器都连不上目标方法不执行
@@ -79,9 +88,12 @@ public class LoginRequireInterceptor implements HandlerInterceptor {
 
             //3、两个都没有
             if(StringUtils.isEmpty(token) && StringUtils.isEmpty(cookieValue)){
-                String redirectUrl = "http://www.gmallsso.com/login?originUrl="+request.getRequestURL();
-                response.sendRedirect(redirectUrl);
-                return  false;
+                if(needLogin == true){
+                    String redirectUrl = "http://www.gmallsso.com/login?originUrl="+request.getRequestURL();
+                    response.sendRedirect(redirectUrl);
+                    return  false;
+                }
+                return true;
             }
 
         }else{

@@ -65,7 +65,7 @@ public class CookieUtils {
     public static void removeCookie(HttpServletResponse response, String name) {
         Cookie uid = new Cookie(name, null);
         uid.setPath("/");
-        uid.setMaxAge(0);
+        uid.setMaxAge(0); //同名cookie没有生存时间就删除
         response.addCookie(uid);
     }
 
