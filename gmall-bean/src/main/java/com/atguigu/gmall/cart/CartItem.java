@@ -19,6 +19,9 @@ public class CartItem implements Serializable {
     @Getter
     private Integer num;//当前项数量
     private BigDecimal totalPrice;//当前项的总价
+    @Getter
+    @Setter
+    private boolean isCheck = false; //可以发ajax请求更新此字段
 
     /**
      * 自动算这一项的总价

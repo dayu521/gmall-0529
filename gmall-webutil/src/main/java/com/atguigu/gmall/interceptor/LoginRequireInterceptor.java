@@ -45,10 +45,26 @@ public class LoginRequireInterceptor implements HandlerInterceptor {
                 //只要这个参数有 ，说明登陆成功了我们要设置这个cookie
                 Cookie cookie = new Cookie(CookieConstant.SSO_COOKIE_NAME, token);
                 cookie.setPath("/");
+                //同子域;共享cookie
+                //www.gmall.com。只要二级域名一样的所有网址，都是子域相同，
+                //cookie在二级域名相同可以共享；
+                //直接addCookie setDomain  默认是当前项目的全域名 item.gmall.com
+                //只要有一个人登陆成了，和他同域的子系统，都不用登陆，只需要放大cookie的作用域
+                //最大只能放到二级域名
+
+                //当前项目 search.gmall.com  只要把cookie放到大二级域名的级别，整个gmall.com系统都能用
+                // 能放大到。 cookie.setDomain("baidu.com");
+                // 异域（域名不一样）的cookie不能共享；
+                // search.gmall.com
+                // item.gmall.com
+                cookie.setDomain("gmall.com");
                 response.addCookie(cookie);
+                //把用户的信息也要放上
+                Map<String, Object> map = CookieUtils.resolveTokenData(token);
+                //解好以后将用户信息放进请求域中，当次请求就能用了；
+                request.setAttribute(CookieConstant.LOGIN_USER_INFO_KEY,map);
                 return true;
             }
-
 
 
             //2、验证是否存在登陆的cookie

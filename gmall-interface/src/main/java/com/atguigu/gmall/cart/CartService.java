@@ -1,5 +1,7 @@
 package com.atguigu.gmall.cart;
 
+import java.util.List;
+
 /**
  * 购物车功能
  */
@@ -38,4 +40,20 @@ public interface CartService {
      */
     void mergeCart(String cartKey, Integer userId);
 
+
+    /**
+     * 查询购物车所有数据
+     * @param cartKey
+     * @param login
+     * @return
+     */
+    List<CartItem> getCartInfoList(String cartKey, boolean login);
+
+    /**
+     * 查询购物车中的某个数据
+     * @param cartKey
+     * @param skuId
+     * @return
+     */
+    CartItem getCartItemInfo(String cartKey, Integer skuId);
 }

@@ -23,7 +23,10 @@
 
             </ul>
             <ul class="header-right">
-                <li><a href="../登录页面\index.html" style="color: red;">你好，请登录</a></li>
+                <li><a href="../登录页面\index.html" style="color: red;"
+                       th:if="${userInfo == null}">你好，请登录</a></li>
+                <li><a href="../登录页面\index.html" style="color: red;"
+                       th:if="${userInfo != null}" th:text="${userInfo.nickName}">你好，请登录</a></li>
                 <li><a href="../注册页面\index.html" >免费注册</a></li>
                 <li class="spacer"></li>
                 <li><a href="">我的订单</a></li>
@@ -52,10 +55,13 @@
                 <input type="button" value="搜索" class="one_right_btn">
             </div>
         </div>
-        <div class="one_search_load"    >
+
+
+        <div class="one_search_load"   th:if="${userInfo==null}" >
             <img src="./img/shop_07.jpg" class="one_load_wraing">
             <span>您还没有登录！登录后购物车的商品将保存到您账号中</span>
-            <a href="#"><input type="button" onclick="login()" value="立即登录" class="one_load_btn"></a>
+            <a href="#"><input type="button" onclick="login()"
+                               value="立即登录" class="one_load_btn"></a>
         </div>
     </div>
 </div>
@@ -81,75 +87,38 @@
 
         <div class="One_ShopCon">
             <ul>
-                <li  >
+                <li th:each="cartItem:${cartVo.cartItems}"  >
                     <div> </div>
 
                     <div>
                         <ol>
                             <li><input type="checkbox"   class="check"   onchange="checkSku(this)"  /></li>
                             <li>
-                                <dt><img   src="img\shop1.jpg" alt=""></dt>
+                                <dt><img th:src="${cartItem.skuItem.skuDefaultImg}"
+                                         src="img\shop1.jpg" alt=""></dt>
                                 <dd  onclick="toItem(1)">
                                     <p>
-                                        <span  >TCL 55A950C 55英寸32核</span>
+                                        <span  th:text="${cartItem.skuItem.skuName}">TCL 55A950C 55英寸32核</span>
                                     </p>
                                 </dd>
                             </li>
                             <li>
-                                <p class="dj"  >￥4599.00</p>
+                                <p class="dj"  th:text="'￥'+${cartItem.skuItem.price}">￥4599.00</p>
                             </li>
                             <li>
                                 <p>
                                     <span>-</span>
-                                    <span>5</span>
+                                    <span th:text="${cartItem.num}">5</span>
                                     <span>+</span>
                                 </p>
                             </li>
-                            <li style="font-weight:bold"><p class="zj"  >￥22995.00</p></li>
+                            <li style="font-weight:bold"><p class="zj"  th:text="'￥'+${cartItem.totalPrice}">￥22995.00</p></li>
                             <li>
                                 <p>删除</p>
                             </li>
                         </ol>
                     </div>
                 </li>
-                 <li>
-                    <div>
-                    </div>
-                    <div>
-                        <ol>
-                            <li><input type="checkbox"  class="check"></li>
-                            <li>
-                                <dt><img src="img\shop1.jpg" alt=""></dt>
-                                <dd>
-                                    <p>
-
-                                        <span>TCL 55A950C 55英寸32核</span>
-                                        <span>尺码: 55时 超薄曲面 人工智能</span>
-                                    </p>
-                                    <p>人工智能 HDR曲面超薄4K电视金属机</p>
-
-                                </dd>
-                            </li>
-                            <li>
-                                <p class="dj">￥4599.00</p>
-
-                            </li>
-                            <li>
-                                <p>
-                                    <span>-</span>
-                                    <span>5</span>
-                                    <span>+</span>
-                                </p>
-
-                            </li>
-                            <li style="font-weight:bold"><p class="zj">￥22995.00</p></li>
-                            <li>
-                                <p>删除</p>
-
-                            </li>
-                        </ol>
-                    </div>
-                </li> 
 
             </ul>
         </div>
@@ -172,7 +141,7 @@
             </div>
             <div>
                 <ol>
-                    <li>总价:<span style="color:#e64346;font-weight:bold;font-size:16px;" class="fnt">￥0.00</span>  </li>
+                    <li>总价:<span style="color:#e64346;font-weight:bold;font-size:16px;" class="fnt" th:text="${cartVo.totalPrice}">￥0.00</span>  </li>
 
                 </ol>
             </div>
@@ -274,7 +243,7 @@
 
     function login(){
       var s = encodeURIComponent("http://cart.gmall.com/cartList");
-       window.location.href="http://passport.atguigu.com/index?originUrl="+s;
+       window.location.href="http://www.gmallsso.com/login?originUrl="+s;
     }
 
     function checkSku( chkbox){

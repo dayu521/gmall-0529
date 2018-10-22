@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -63,8 +66,20 @@ public class CartServiceImpl implements CartService {
                         cartItem.setSkuItem(skuItem);
                         cartItem.setTotalPrice(cartItem.getTotalPrice());
 
+                        //添加商品
                         String jsonString = JSON.toJSONString(cartItem);
                         jedis.hset(cartKey,skuItem.getId()+"",jsonString);
+
+
+
+                        //更新顺序字段
+                        //拿出之前的顺序，把顺序也更新一下
+                        String fieldOrder = jedis.hget(cartKey, "fieldOrder");
+                        List list = JSON.parseObject(fieldOrder, List.class);
+                        //把新的商品放进list
+                        list.add(skuId);
+                        String string = JSON.toJSONString(list);
+                        jedis.hset(cartKey,"fieldOrder",string);
                     } catch (InterruptedException e) {
                     }
                 }
@@ -115,6 +130,14 @@ public class CartServiceImpl implements CartService {
 
                     String json = JSON.toJSONString(cartItem);
                     Long hset = jedis.hset(cartKey, skuId + "", json);
+                    
+                    //拿出之前的顺序，把顺序也更新一下
+                    String fieldOrder = jedis.hget(cartKey, "fieldOrder");
+                    List list = JSON.parseObject(fieldOrder, List.class);
+                    //把新的商品放进list
+                    list.add(skuId);
+                    String string = JSON.toJSONString(list);
+                    jedis.hset(cartKey,"fieldOrder",string);
                 } catch (InterruptedException e) {
                 }
             }
@@ -134,7 +157,64 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public void mergeCart(String cartKey, Integer userId) {
+        //合并购物车
 
+
+
+        //1、查出临时购物车的所有数据
+        List<CartItem> cartItems = getCartInfoList(cartKey, false);
+        if(cartItems!=null && cartItems.size()>0){
+            for (CartItem tempCartItem : cartItems) {
+                //挨个购物车重新添加到用户的购物车中
+                addToCartLogin(tempCartItem.getSkuItem().getId(),userId,tempCartItem.getNum());
+            }
+        }
+        //合并完成：删除redis中的临时购物车
+        Jedis jedis = jedisPool.getResource();
+        jedis.del(cartKey);
+        //删除临时购物车cookie
+        //2、把这些数据填到用户购物车中
+
+    }
+
+    /**
+     * 查询购物车数据
+     * @param cartKey 登陆了传的是用户id
+     * @param login
+     * @return
+     */
+    @Override
+    public List<CartItem> getCartInfoList(String cartKey, boolean login) {
+        String queryKey = cartKey;
+        if(login){
+            queryKey = CartConstant.USER_CART_PREFIX + cartKey;
+        }
+
+
+        //查redis中这个key对应的购物车数据
+        Jedis jedis = jedisPool.getResource();
+        //map的key是什么，值是什么？
+        List<CartItem> cartItemList = new ArrayList<>();
+        //Map<String, String> hgetAll = jedis.hgetAll(queryKey);
+        String fieldOrder = jedis.hget(queryKey, "fieldOrder");
+        List list = JSON.parseObject(fieldOrder, List.class);
+        for (Object o : list) {
+            int idSort = Integer.parseInt(o.toString());
+            String hget = jedis.hget(queryKey, idSort + "");
+            CartItem cartItem = JSON.parseObject(hget, CartItem.class);
+            cartItemList.add(cartItem);
+        }
+        return cartItemList;
+    }
+
+    @Override
+    public CartItem getCartItemInfo(String cartKey, Integer skuId) {
+        Jedis jedis = jedisPool.getResource();
+        String json = jedis.hget(cartKey, skuId + "");
+        CartItem cartItem = JSON.parseObject(json, CartItem.class);
+
+     
+        return cartItem;
     }
 
 
@@ -185,7 +265,11 @@ public class CartServiceImpl implements CartService {
             String jsonString = JSON.toJSONString(cartItem);
 
 
+            List<Integer> ids = new ArrayList<>();
+            ids.add(cartItem.getSkuItem().getId());
             Long hset = jedis.hset(newCartKey, skuItem.getId()+"", jsonString);
+            String fieldOrder = JSON.toJSONString(ids);
+            jedis.hset(newCartKey,"fieldOrder",fieldOrder);
 
 
         } catch (InterruptedException e) {
