@@ -13,6 +13,6 @@ public class OrderSubmitVo implements Serializable{
     private Integer userAddressId;//用户地址的id
     private String orderComment;//订单的备注
 
-    private String token;//防重复提交令牌
+    private String tradeToken;//防重复提交令牌
 
 }

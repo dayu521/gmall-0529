@@ -4,13 +4,16 @@ package com.atguigu.gmall.order.controller;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.atguigu.gmall.annotation.LoginRequired;
+import com.atguigu.gmall.order.OrderInfoTo;
 import com.atguigu.gmall.order.OrderService;
 import com.atguigu.gmall.order.OrderSubmitVo;
+import com.atguigu.gmall.user.UserAddress;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -43,17 +46,18 @@ public class OrderController {
      */
     @LoginRequired
     @RequestMapping("/submitOrder")
-    public String submitOrder(OrderSubmitVo submitVo, HttpServletRequest request){
+    public String submitOrder(OrderSubmitVo submitVo, HttpServletRequest request) throws IOException {
 
         Map<String,Object> userInfo = (Map<String, Object>) request.getAttribute("userInfo");
 
+        log.info("当前用户是：",userInfo);
         //4、都验证通过可以生成订单
         //LastStep：生成订单；生成OrderInfo；OrderItem
         log.info("页面收到的数据：{}",submitVo);
 
         //1、只收页面提交的两个数据
         //2、防重复提交
-        boolean token = orderService.verfyToken(submitVo.getToken());
+        boolean token = orderService.verfyToken(submitVo.getTradeToken());
         if(!token){
             //令牌失效
             request.setAttribute("errorMsg","订单信息失效，请去购物车重新刷新并下单");
@@ -70,6 +74,23 @@ public class OrderController {
             return "tradeFail";
         }
 
+        //4、以上都ok,下单
+        OrderInfoTo orderInfoTo = new OrderInfoTo();
+        orderInfoTo.setOrderComment(submitVo.getOrderComment());
+        Integer userAddressId = submitVo.getUserAddressId();
+        UserAddress userAddress = orderService.getUserAddressById(userAddressId);
+        orderInfoTo.setConsignee(userAddress.getConsignee());
+        orderInfoTo.setConsigneeTel(userAddress.getPhoneNum());
+        orderInfoTo.setDeliveryAddress(userAddress.getUserAddress());
+
+        //创建订单
+        try {
+            orderService.createOrder(userId,orderInfoTo);
+        }catch (Exception e){
+            request.setAttribute("errorMsg","网络异常..."+e.getMessage());
+            e.printStackTrace();
+            return  "tradeFail";
+        }
 
         //成功来到支付页，先写成list
         return "list";

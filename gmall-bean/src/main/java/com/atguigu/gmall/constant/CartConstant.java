@@ -1,4 +1,4 @@
-package com.atguigu.gmall.cart.constant;
+package com.atguigu.gmall.constant;
 
 public class CartConstant {
     public static final String TEMP_CART_PREFIX = "temp:cart:";

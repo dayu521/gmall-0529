@@ -1,5 +1,7 @@
 package com.atguigu.gmall.order;
 
+import com.atguigu.gmall.user.UserAddress;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -24,4 +26,19 @@ public interface OrderService {
      * @return 所有库存不足的商品信息
      */
     List<String> verfyStock(Integer userId) throws IOException;
+
+
+    /**
+     *
+     * @param userId     用户的id
+     * @param submitVo  订单的备注、收货人等信息
+     */
+    void createOrder(Integer userId,OrderInfoTo submitVo);
+
+    /**
+     * 获取用户的地址
+     * @param userAddressId
+     * @return
+     */
+    UserAddress getUserAddressById(Integer userAddressId);
 }

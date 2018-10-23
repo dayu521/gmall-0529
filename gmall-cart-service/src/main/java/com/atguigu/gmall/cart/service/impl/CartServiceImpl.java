@@ -7,7 +7,7 @@ import com.atguigu.gmall.cart.CartItem;
 import com.atguigu.gmall.cart.CartService;
 import com.atguigu.gmall.cart.CartVo;
 import com.atguigu.gmall.cart.SkuItem;
-import com.atguigu.gmall.cart.constant.CartConstant;
+import com.atguigu.gmall.constant.CartConstant;
 import com.atguigu.gmall.manager.SkuService;
 import com.atguigu.gmall.manager.sku.SkuInfo;
 import org.apache.commons.lang3.StringUtils;
