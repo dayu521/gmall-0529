@@ -93,7 +93,9 @@
                     <div>
                         <ol>
                             <li>
-                                <input type="checkbox"   class="check" th:checked="${cartItem.check}"
+                                <input type="checkbox"
+                                       class="check"
+                                       th:checked="${cartItem.check}"
                                        th:onchange="'checkSku('+${cartItem.skuItem.id}+',this)'" /></li>
                             <li>
                                 <dt><img th:src="${cartItem.skuItem.skuDefaultImg}"
@@ -237,7 +239,7 @@
 <script type="text/javascript">
 
      function toTrade(){
-         window.location.href="http://cart.gmall.com/toTrade";
+         window.location.href="http://order.gmall.com/trade";
     }
     function toItem(skuId) {
         window.location.href="http://item.gmall.com/"+skuId+".html";

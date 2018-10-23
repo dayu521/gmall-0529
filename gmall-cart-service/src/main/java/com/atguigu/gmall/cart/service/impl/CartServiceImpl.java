@@ -234,7 +234,34 @@ public class CartServiceImpl implements CartService {
 
     }
 
+    @Override
+    public List<CartItem> getCartInfoCheckedList(int id) {
+        Jedis jedis = jedisPool.getResource();
+        String cartKey = CartConstant.USER_CART_PREFIX + id;
 
+        //1、获取购物车所有商品
+        Map<String, String> stringMap = jedis.hgetAll(cartKey);
+
+        List<CartItem> checkedItem = new ArrayList<>();
+        //2、保存所有被选中的项目
+        List<CartItem> cartItemList = getCartInfoList(id + "", true);
+        if(cartItemList == null) {
+            return  null;
+        }
+
+        for (CartItem cartItem : cartItemList) {
+            if(cartItem.isCheck()){
+                checkedItem.add(cartItem);
+            }
+        }
+
+        //3、返回被候选的
+        if(checkedItem.size() == 0){
+            return null;
+        }
+        jedis.close();
+        return checkedItem;
+    }
 
 
     /**

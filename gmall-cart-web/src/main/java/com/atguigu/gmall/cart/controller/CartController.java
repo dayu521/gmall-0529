@@ -41,17 +41,20 @@ public class CartController {
      * @param checkFlag true代表勾选了
      * @return
      */
+    @LoginRequired(needLogin = false)
     @ResponseBody
     @RequestMapping("checkItem")
     public String checkItem(Integer skuId,Boolean checkFlag,HttpServletRequest request){
-        Map<String,Object> userInfo = (Map<String, Object>) request.getAttribute(CookieConstant.LOGIN_USER_INFO_KEY);
+        Map<String,Object> userInfo = (Map<String, Object>)
+                request.getAttribute(CookieConstant.LOGIN_USER_INFO_KEY);
         String tempCartKey = CookieUtils.getCookieValue(request, CookieConstant.COOKIE_CART_KEY);
 
         boolean loginFlag = userInfo==null?false:true;
         int userId = 0;
         try {
-           Integer.parseInt(userInfo.get("id").toString());
+            userId = Integer.parseInt(userInfo.get("id").toString());
         }catch (Exception e){}
+
         cartService.checkItem(skuId,checkFlag,tempCartKey,userId,loginFlag);
         return "ok";
     }
