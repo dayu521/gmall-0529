@@ -4,12 +4,15 @@ package com.atguigu.gmall.order.controller;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.atguigu.gmall.annotation.LoginRequired;
+import com.atguigu.gmall.order.OrderInfo;
 import com.atguigu.gmall.order.OrderInfoTo;
 import com.atguigu.gmall.order.OrderService;
 import com.atguigu.gmall.order.OrderSubmitVo;
 import com.atguigu.gmall.user.UserAddress;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +26,8 @@ import java.util.Map;
 public class OrderController {
 
 
+    @Value("${gmall.payment.page}")
+    String paymentPage; //需要调转到其他项目的支付选择页面
 
     @Reference
     OrderService orderService;
@@ -46,7 +51,8 @@ public class OrderController {
      */
     @LoginRequired
     @RequestMapping("/submitOrder")
-    public String submitOrder(OrderSubmitVo submitVo, HttpServletRequest request) throws IOException {
+    public String submitOrder(OrderSubmitVo submitVo,
+                              HttpServletRequest request, Model model) throws IOException {
 
         Map<String,Object> userInfo = (Map<String, Object>) request.getAttribute("userInfo");
 
@@ -84,8 +90,9 @@ public class OrderController {
         orderInfoTo.setDeliveryAddress(userAddress.getUserAddress());
 
         //创建订单
+        OrderInfo info = null;
         try {
-            orderService.createOrder(userId,orderInfoTo);
+            info = orderService.createOrder(userId, orderInfoTo);
         }catch (Exception e){
             request.setAttribute("errorMsg","网络异常..."+e.getMessage());
             e.printStackTrace();
@@ -93,6 +100,23 @@ public class OrderController {
         }
 
         //成功来到支付页，先写成list
+        //将订单的一些信息带过去。会自动放到url地址后面
+        //model.addAttribute("","");
+        //将订单的信息放在请求域中
+        /**
+         *   <input  name="out_trade_no" type="hidden"/> <br/>
+         <input  name="subject" type="hidden"/><br/>
+         <input  name="total_amount" type="hidden"/><br/>
+         <input  name="body" type="hidden"/><br/>
+         <button id="paymentButton" type="submit">立即支付</button>
+         */
+        //创建好订单以后返回订单对象
+        model.addAttribute("orderInfo",info);
+        return "paymentPage";
+    }
+
+    @RequestMapping("/list")
+    public String orderList(){
         return "list";
     }
 }

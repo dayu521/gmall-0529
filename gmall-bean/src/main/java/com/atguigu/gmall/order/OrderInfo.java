@@ -30,7 +30,7 @@ public class OrderInfo extends SuperBean {
 
     private Date expireTime;  //过期时间
 
-
+    private String tradeBody;//订单描述
 
     private String orderComment; //订单备注
 
@@ -40,6 +40,9 @@ public class OrderInfo extends SuperBean {
 
     private String trackingNo; //物流单号
 
+    private String wareId;
+
+    private String outTradeNo;  //对外交易号；对接支付宝
 
     @TableField(exist = false)
     private List<OrderDetail> orderDetailList;//所有订单项的集合
@@ -48,9 +51,6 @@ public class OrderInfo extends SuperBean {
     @TableField(exist = false)
     private List<OrderInfo> orderSubList; //子订单
 
-    private String wareId;
-
-    private String outTradeNo;  //对外交易号；对接支付宝
 
 
 }

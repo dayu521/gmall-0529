@@ -38,6 +38,12 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.alipay.sdk</groupId>
+			<artifactId>alipay-sdk-java</artifactId>
+			<version>3.3.87.ALL</version>
+		</dependency>
+
 	</dependencies>
 
 

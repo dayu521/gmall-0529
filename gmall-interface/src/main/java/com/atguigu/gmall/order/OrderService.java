@@ -33,7 +33,7 @@ public interface OrderService {
      * @param userId     用户的id
      * @param submitVo  订单的备注、收货人等信息
      */
-    void createOrder(Integer userId,OrderInfoTo submitVo);
+    OrderInfo createOrder(Integer userId,OrderInfoTo submitVo);
 
     /**
      * 获取用户的地址
@@ -41,4 +41,8 @@ public interface OrderService {
      * @return
      */
     UserAddress getUserAddressById(Integer userAddressId);
+
+    OrderInfo getOrderById(Integer id);
+
+    void updateOrderPaySuccess(String out_trade_no);
 }

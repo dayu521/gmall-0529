@@ -14,6 +14,7 @@ import com.atguigu.gmall.order.mapper.OrderDetailMapper;
 import com.atguigu.gmall.order.mapper.OrderInfoMapper;
 import com.atguigu.gmall.order.mapper.UserAddressMapper;
 import com.atguigu.gmall.user.UserAddress;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -89,7 +90,7 @@ public class OrderServiceImpl implements OrderService{
 
     @Transactional
     @Override
-    public void createOrder(Integer userId,OrderInfoTo orderInfoTo) {
+    public OrderInfo createOrder(Integer userId,OrderInfoTo orderInfoTo) {
         //1、找到购物车中所有需要下单的商品
         List<CartItem> cartItems = cartService.getCartInfoCheckedList(userId);
         CartVo cartVo = new CartVo();
@@ -115,10 +116,14 @@ public class OrderServiceImpl implements OrderService{
         //对外业务号
         orderInfo.setOutTradeNo("ATGUIGU_"+ System.currentTimeMillis()+"_"+userId);
         orderInfo.setTotalAmount(totalPrice);
+
+        //加上订单描述;默认是第一个商品的名字
+        orderInfo.setTradeBody(cartItems.get(0).getSkuItem().getSkuName());
+
         orderInfoMapper.insert(orderInfo);
 
 
-
+        List<OrderDetail> orderDetailList = new ArrayList<>();
         //2、这些商品对应的是OrderDetail；
         for (CartItem cartItem : cartItems) {
             SkuItem skuItem = cartItem.getSkuItem();
@@ -130,7 +135,10 @@ public class OrderServiceImpl implements OrderService{
             orderDetail.setSkuName(skuItem.getSkuName());
             orderDetail.setSkuNum(cartItem.getNum());
             orderDetailMapper.insert(orderDetail);
+            orderDetailList.add(orderDetail);
         }
+
+        orderInfo.setOrderDetailList(orderDetailList);
         
         //3、所有的OrderDetail才组成一个OrderInfo
         //以上完成了，删掉购物车以上东西
@@ -173,12 +181,38 @@ public class OrderServiceImpl implements OrderService{
         jedis.hset(CartConstant.USER_CART_PREFIX+userId,"fieldOrder",JSON.toJSONString(newfieldOrder));
         jedis.close();
 
+        //返回刚才创建好保存到数据库的订单；
+        return orderInfo;
+
     }
 
     @Override
     public UserAddress getUserAddressById(Integer userAddressId) {
 
         return  userAddressMapper.selectById(userAddressId);
+    }
+
+    @Override
+    public OrderInfo getOrderById(Integer id) {
+        return orderInfoMapper.selectById(id);
+    }
+
+    /**
+     * 将订单状态改为支付成功
+     * @param out_trade_no
+     */
+    @Override
+    public void updateOrderPaySuccess(String out_trade_no) {
+        OrderInfo where = new OrderInfo();
+        where.setOutTradeNo(out_trade_no);
+
+        OrderInfo orderInfo = new OrderInfo();
+        //为null的不会修改
+        orderInfo.setProcessStatus(ProcessStatus.PAID);
+        orderInfo.setOrderStatus(OrderStatus.PAID);
+
+        //new UpdateWrapper<OrderInfo>(where) 用来生产where的 where out_trade_no=xxxx
+        orderInfoMapper.update(orderInfo,new UpdateWrapper<OrderInfo>(where));
     }
 
     /**
